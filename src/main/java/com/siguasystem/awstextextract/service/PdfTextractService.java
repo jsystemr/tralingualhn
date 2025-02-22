@@ -39,8 +39,8 @@ public class PdfTextractService {
 	private final S3Client s3Client;
     
 	/*Variables AWS se reemplazaraon por variables de session*/
-	private String accessKey=System.getenv("was_textractAccessKey");
-    private String secretKey=System.getenv("aws_textractSecretKey");
+	private String accessKey=System.getenv("textractAccessKey");
+    private String secretKey=System.getenv("textractSecretKey");
     private String region="us-east-2";
     private String bucketName="tralingual-ocr-pdf-hn";
 	/*---------------------------------------------------------*/

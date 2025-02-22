@@ -29,7 +29,7 @@ public class SecurityConfig {
 		.csrf(csrf ->csrf.disable())
 		.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api-tra/**").permitAll() // Permite acceso público
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
 		);
 	return http.build();
 	}

@@ -12,7 +12,7 @@ import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 @EnableWebSecurity
 public class SecurityConfig {
 
-	/*@Bean
+	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
 		// set the name of the attribute the CsrfToken will be populated on
@@ -23,8 +23,8 @@ public class SecurityConfig {
 				.csrfTokenRequestHandler(requestHandler)
 			);
 		return http.build();
-	}*/
-	 @Bean
+	}
+	/*  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf
@@ -33,6 +33,6 @@ public class SecurityConfig {
             .authorizeRequests(auth -> auth
                 .anyRequest().authenticated()
             );
-        return http.build();
+        return http.build();*/
     }
 }

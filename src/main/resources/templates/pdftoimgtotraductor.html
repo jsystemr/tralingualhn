@@ -21,6 +21,7 @@
 				<script type="text/javascript">
 					  // Configura jQuery para enviar el token CSRF automáticamente
 					$(document).ajaxSend(function(event, xhr) {
+						const csrfToken = getCsrfToken();
 						xhr.setRequestHeader("X-XSRF-TOKEN", getCookie("XSRF-TOKEN"));
 					});
 					
@@ -43,6 +44,17 @@
 								descargarPdf(e);
 	    					});
 					});
+
+					function getCsrfToken() {
+							const cookies = document.cookie.split(';');
+							for (let cookie of cookies) {
+								const [name, value] = cookie.trim().split('=');
+								if (name === 'XSRF-TOKEN') {
+									return decodeURIComponent(value);
+								}
+							}
+							return null;
+						}
 
 					// Obtener el token desde la cookie
 					function getCookie(name) {

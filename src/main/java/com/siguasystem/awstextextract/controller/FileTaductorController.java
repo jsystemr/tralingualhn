@@ -23,7 +23,7 @@ import com.siguasystem.awstextextract.service.ConvertPDFPagesToImages;
 import com.siguasystem.awstextextract.service.TextractService;
 
 @RestController
-@RequestMapping("api-tra")
+@RequestMapping("/api-tra")
 public class FileTaductorController {
 
 	@Autowired

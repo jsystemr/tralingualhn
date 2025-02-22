@@ -25,8 +25,8 @@ public class AwsConfig {
 	@Bean
     public TextractClient textractClient() {
 		/*Variables AWS se reemplazaraon por variables de session*/
-		String textractAccessKey=System.getenv("textractAccessKey");
-		String textractSecretKey=System.getenv("textractSecretKey");
+		//String textractAccessKey=System.getenv("textractAccessKey");
+		//String textractSecretKey=System.getenv("textractSecretKey");
 	     String region="us-east-2";
         return TextractClient.builder()
                 .region(Region.of(region))
@@ -39,8 +39,8 @@ public class AwsConfig {
     @Bean
     public TranslateClient translateClient() {
     	/*Variables AWS se reemplazaraon por variables de session*/
-		String translateAccessKey=System.getenv("translateAccessKey");
-		String translateSecretKey=System.getenv("translateSecretKey");
+		//String translateAccessKey=System.getenv("translateAccessKey");
+		//String translateSecretKey=System.getenv("translateSecretKey");
 	     String region="us-east-2";
         return TranslateClient.builder()
         		.region(Region.of(region))

@@ -1,5 +1,6 @@
 package com.siguasystem.awstextextract;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,14 @@ import software.amazon.awssdk.services.translate.TranslateClient;
 @Configuration
 public class AwsConfig {
 	
+    @Value("${aws.textractAccessKey}")
+    private String textractAccessKey;
+    @Value("${aws.textractSecretKey}")
+    private String textractSecretKey;
+    @Value("${aws.translateAccessKey}")
+    private String translateAccessKey;
+    @Value("${aws.translateSecretKey}")
+    private String translateSecretKey;
 
 	@Bean
     public TextractClient textractClient() {

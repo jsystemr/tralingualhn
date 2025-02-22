@@ -17,6 +17,14 @@ public class CorsConfig  {
                     .allowedOrigins("*") // Permite todos los orígenes (¡cambia esto en producción!)
                     .allowedMethods("GET", "POST", "PUT", "DELETE")
                     .allowedHeaders("*");
+                    registry.addMapping("/api/**")
+                    .allowedOrigins("*") // Permite todos los orígenes (¡cambia esto en producción!)
+                    .allowedMethods("GET", "POST", "PUT", "DELETE")
+                    .allowedHeaders("*");
+                    registry.addMapping("/api-pdf/**")
+                    .allowedOrigins("*") // Permite todos los orígenes (¡cambia esto en producción!)
+                    .allowedMethods("GET", "POST", "PUT", "DELETE")
+                    .allowedHeaders("*");
             }
         };
     }

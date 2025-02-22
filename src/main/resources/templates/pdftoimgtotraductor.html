@@ -19,6 +19,10 @@
 				</div>
 			</div>			
 				<script type="text/javascript">
+					  // Configura jQuery para enviar el token CSRF automáticamente
+					$(document).ajaxSend(function(event, xhr) {
+						xhr.setRequestHeader("X-XSRF-TOKEN", getCookie("XSRF-TOKEN"));
+					});
 					
 					$(function() {
 						//Mostrar el modal
@@ -39,6 +43,13 @@
 								descargarPdf(e);
 	    					});
 					});
+
+					// Obtener el token desde la cookie
+					function getCookie(name) {
+							const value = `; ${document.cookie}`;
+							const parts = value.split(`; ${name}=`);
+							if (parts.length === 2) return parts.pop().split(';').shift();
+					}
 					
 					function descargarPdfFetch(){
 						const form = document.querySelector("#form");

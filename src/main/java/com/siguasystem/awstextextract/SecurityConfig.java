@@ -14,16 +14,33 @@ import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler
 public class SecurityConfig {
 
 	@Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // Habilita CSRF con cookie
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**").permitAll() // Permite acceso a la API
+				.requestMatchers("/api-tra/**").permitAll() // Permite acceso a la API
+				.requestMatchers("/api-pdf/**").permitAll() // Permite acceso a la API
+                .requestMatchers("/static/**").permitAll() // Permite recursos estáticos
+                .anyRequest().permitAll()
+            );
+
+        return http.build();
+    }
+
+	/*@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
 		// set the name of the attribute the CsrfToken will be populated on
 		requestHandler.setCsrfRequestAttributeName(null);
-		/* http
+		 http
 			// ...
 			.csrf((csrf) -> csrf
 				.csrfTokenRequestHandler(requestHandler)
 			);
-		return http.build();*/
+		return http.build();
 		http
 		// ...
 		.csrf(csrf ->csrf.disable())
@@ -32,7 +49,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
 		);
 	return http.build();
-	}
+	}*/
 	/*  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

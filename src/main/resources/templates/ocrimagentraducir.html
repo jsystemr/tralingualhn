@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head">
+<meta charset="UTF-8">
+<title th:replace="layout/layout :: titulo">Tralingual</title>
+</head>
+<body class="bg-dark">
+	<header style="height: 30px;">
+	
+	 </header>
+	<div class="container-fluid">
+			<div class="row m-1">
+			</div>		
+			<div class="row ">				
+				<div class="col-2">
+					<div th:replace="layout/layout :: logoempresa" class="col-4">
+		
+		            </div>
+				</div>
+			</div>			
+				<script type="text/javascript">
+					
+				</script>
+					<div class="row">
+							<div class="col-2" >
+							</div  >
+							<div class="col-8 bg-white">
+								<form th:action="@{/api-tra/traducir-imagen-a-ingles}" method="post" enctype="multipart/form-data">
+									<h4 class="bg-white">Cargar la Imagen:</h4>
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+									<input type="file" name="file" id="csv" />
+									<button class="btn btn-primary mb-2">
+										<span class="glyphicon glyphicon-send"></span> Procesar...
+									</button>
+	
+								</form>
+							</div>
+					 </div>
+					<div class="row">	
+							<div class="col-2" >
+							</div  >
+							<div class="col-8">	  
+		
+							</div>
+					</div>
+		<footer th:fragment="footer" class="container"> </footer>
+	</div>
+</body>
+</html>

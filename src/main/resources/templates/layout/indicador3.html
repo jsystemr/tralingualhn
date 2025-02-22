@@ -1,0 +1,130 @@
+<div th:fragment="indicador01">	
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cargando informacion...</h5>
+        <button class="btn btn-danger glyphicon glyphicon-remove" data-dismiss="modal" aria-label="Close" onclick="cerrarCarga()"><span aria-hidden="true" ></span></button>
+      </div>
+      <div class="modal-body">
+	<style>
+	.modal .custom .modal-dialog {
+	background-color:black;
+	opacity:0.5;
+	    width:50%;
+	    margin:0 auto;
+	    /*add what you want here*/
+	}
+	.loader,
+.loader:before,
+.loader:after {
+  border-radius: 50%;
+}
+.loader {
+  color: #ffffff;
+  font-size: 11px;
+  text-indent: -99999em;
+  margin: 55px auto;
+  position: relative;
+  width: 10em;
+  height: 10em;
+  box-shadow: inset 0 0 0 1em;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.loader:before,
+.loader:after {
+  position: absolute;
+  content: '';
+}
+.loader:before {
+  width: 5.2em;
+  height: 10.2em;
+  background: #0dc5c1;
+  border-radius: 10.2em 0 0 10.2em;
+  top: -0.1em;
+  left: -0.1em;
+  -webkit-transform-origin: 5.1em 5.1em;
+  transform-origin: 5.1em 5.1em;
+  -webkit-animation: load2 2s infinite ease 1.5s;
+  animation: load2 2s infinite ease 1.5s;
+}
+.loader:after {
+  width: 5.2em;
+  height: 10.2em;
+  background: #ffffff;
+  border-radius: 0 10.2em 10.2em 0;
+  top: -0.1em;
+  left: 4.9em;
+  -webkit-transform-origin: 0.1em 5.1em;
+  transform-origin: 0.1em 5.1em;
+  -webkit-animation: load2 2s infinite ease;
+  animation: load2 2s infinite ease;
+}
+@-webkit-keyframes load2 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load2 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+	</style>
+<script type="text/javascript">
+	function verDialogo(){
+		$('.modal').show();
+		indicadorCarga();
+	}
+	
+	function indicadorCarga(){
+	     //Agregando Div carga
+                    $('.modal-body').append('<div class="loader"><div> <div id="close-sidebar"></div></div><div class="loader">Loading...</div></div>');
+                    $(window).on('load', function(){
+					  setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
+					});
+			}
+                 function cerrarCarga(){
+                 $( ".loader" ).fadeOut(500, function() {
+				 // fadeOut complete. Remove the loading div
+				 $('.modal').hide();
+				 $( ".loader" ).remove(); //makes page more lightweight 
+			});  
+                 }
+	//Consume Url via Ajax y muestra el Resultado en un Div Especifico		
+                  const getData = () => {
+                   document.getElementById("myPlaceHolder").innerHTML="";
+       fetch('getMoreMessage').then(function (response) {
+       	indicadorCarga();
+           return response.text();
+       }).then(function (html) {
+           console.log(html);
+           cerrarCarga();
+           document.getElementById("myPlaceHolder").innerHTML += html;
+       }).catch(function (err) {
+       	cerrarCarga();
+           console.warn('Something went wrong.', err);
+       });
+   }
+</script>
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+  </div>
+</div>
+</div>

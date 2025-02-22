@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Archivo</title>
+</head>
+<body>
+    <h1>Subir Archivo</h1>
+    
+    <!-- Mostrar mensaje de error -->
+    <div th:if="${errorMessage}" style="color: red;">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Formulario de subida -->
+    <form method="POST" th:action="@{/upload}" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <button type="submit">Subir</button>
+    </form>
+</body>
+</html>

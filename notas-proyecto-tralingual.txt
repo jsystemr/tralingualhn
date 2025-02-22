@@ -1,0 +1,48 @@
+ Y le comento Juan Carlos yo también tengo varios compañeros colegas
+ amigos que tienen empresas similares a la mía en otras cosas también 
+y que podrían utilizar mucho el tema de automatización, entonces también 
+se le podría abrir ahí otra oportunidad más alante con otra gente que yo le puedo recomendar, verdad? 
+Siempre entonces ahí me avisas cuando porque si le está mío comentan algunos amigos y
+ ya me decían ella me interesaría, me interesaría ando contás Cómo te va me dice, 
+así que ahí vamos a ver qué onda si me cuenta. 
+
+curl --location --request GET 'http://distribuidorayf.com/index.php?r=cobrofacturas/BatchCobroFacToHisto'
+
+http://siguasystem.com/ventasmov/Listapedidospendientes.php?id=juan&clave=123
+
+----------------------------------------
+------------------------------------------------------------------------------
+Compra de herramientas y costos serian por
+----------------------------------------
+-------------------------------------------
+-----------------------------------
+-Drive o Almacenamiento en la NUBE.
+-Compra de Software.
+-Con que licencias, Deep Help.
+***********************************************
+****Primera Linea Carta*****
+Las cartas de los niños ahora bienen en pdf o escrito en computadora.
+
+1. Escaneo PDF/IMG(Opcional),OCR/Dictado o Audio,Programa de Traduccion(DeepL),Word y PDF. 
+-Dragon----Con--DeeL------
+***Reconocimiento PDF IMAGEN
+	->Luego Traduccion a Ingles
+	->Luego pasar a PDF la Traduccion
+****.
+Resultado: Carpeta con PDF-s, Traducciones.
+
+****Segundo Linea Tarjetas*****
+2. Escaneo PDF/IMG,OCR,Programa de Traduccion(DeepL),Word y PDF. 
+-Dragon----Con--DeeL------
+***Reconocimiento PDF IMAGEN
+	->Luego Traduccion a Ingles
+	->Luego pasar a PDF la Traduccion
+
+***********************************************
+-Transkribus----No traduce al español.
+***Reconocimiento de Texto en Cartas
+	->Leer para Tarjetas en Ingles.
+	->
+****.
+----------------------------------------------
+

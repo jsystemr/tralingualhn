@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head th:replace="layout/layout :: head">
+<meta charset="UTF-8">
+<title th:replace="layout/layout :: titulo">Convertir PDF to Imagen, To Traducir</title>
+</head>
+<body class="bg-dark">
+	<header style="height: 30px;">
+	
+	 </header>
+	<div class="container-fluid">
+			<div class="row m-1">
+			</div>		
+			<div class="row ">				
+				<div class="col-2">
+					<div th:replace="layout/layout :: logoempresa" class="col-4">
+		
+		            </div>
+				</div>
+			</div>			
+				<script type="text/javascript">
+					
+					$(function() {
+						//Mostrar el modal
+						$('#verpedido').on('click',function(){
+							console.log("Enttro al modal!");
+							$('.modal').modal('show');
+						});
+						
+						/*$('#procesar').on('click',function(event){
+							event.preventDefault();
+							indicadorCarga();
+							var data = new FormData(this); // <-- 'this' is your form element
+							//var datastring = $("#form").serialize();
+						*/
+	
+							$('#form').submit( function(e) {
+								e.preventDefault();
+								descargarPdf(e);
+	    					});
+					});
+					
+					function descargarPdfFetch(){
+						const form = document.querySelector("#form");
+	    				var data =new FormData(form); // <-- 'this' is your form element
+	    				indicadorCarga();
+						fetch("/api-tra/traducir-pdf-imagen-a-ingles-pdf",data)
+					    .then(response => response.blob())
+					    .then(blob => {
+					        const link = document.createElement('a');
+					        link.href = URL.createObjectURL(blob);
+					        link.download = 'documento.pdf';
+					        link.click();
+					        URL.revokeObjectURL(link.href);
+					        cerrarCarga();
+						    Swal.fire({icon: "success",title:"Proceso finalizado con exito!"});
+					    });
+					}
+					
+					function descargarPdf(e){
+	    						indicadorCarga();	
+	    						const form = document.querySelector("#form");
+	    						var data =new FormData(form); // <-- 'this' is your form element
+	    						$.ajax({
+								  //contentType: "application/json",
+								  contentType: false,
+   								  processData: false,
+								  type: "POST",
+								  url:"/api-tra/traducir-pdf-imagen-a-ingles-pdf",
+								  data: data,
+								  xhrFields: {
+								        responseType:'blob', //'text'//'blob' // Indicar que la respuesta es un archivo binario
+								    },
+								    //dataType: "binary",
+								    /*success: function(data) {
+								        // Crear un enlace temporal para descargar el archivo
+								         // Crear un Blob con los datos recibidos
+							            const blob = new Blob([data], { type: 'application/pdf' });
+							            const link = document.createElement('a');
+							            link.href = URL.createObjectURL(blob);
+							            link.download = 'traduccion.pdf';
+							            link.click();
+							            URL.revokeObjectURL(link.href);
+								        cerrarCarga();
+								        Swal.fire({icon: "success",title:"Proceso finalizado con exito!"});
+								    },*/
+								     statusCode: {
+									        200: function(data) {
+									            // Manejar éxito
+									            var blob = new Blob([data], { type: 'application/pdf' });
+									            var link = document.createElement('a');
+									            link.href = window.URL.createObjectURL(blob);
+									            link.download = 'traduccion.pdf';
+									            link.click();
+									            window.URL.revokeObjectURL(link.href);
+									            cerrarCarga();
+								        		Swal.fire({icon: "success",title:"Proceso finalizado con exito!"});
+									        },
+									        404: function() {
+									            console.error('Archivo no encontrado');
+								          		Swal.fire({icon: "error",title:"Ocurrio un problema en el proceso...Archivo no encontrado",});
+									        }
+									    },
+								    error: function(xhr, status, error) {
+									cerrarCarga();
+								        console.error("Error:", error);
+								          Swal.fire({icon: "error",title:"Ocurrio un problema en el proceso...",text:error});
+								    }
+								});
+	    						
+					}
+					
+					function descargarTxt(e){
+	    						
+	    						indicadorCarga();	
+	    						const form = document.querySelector("#form");
+	    						var data =new FormData(form); // <-- 'this' is your form element
+	    						$.ajax({
+								  contentType: false,
+   								  processData: false,
+								  type: "POST",
+								  url:"/api-tra/traducir-pdf-imagen-a-ingles",
+								  data: data,
+								  xhrFields: {
+								        responseType:'text'//'blob' // Indicar que la respuesta es un archivo binario
+								    },
+								    success: function(data) {
+								        // Crear un enlace temporal para descargar el archivo
+								        const blob = new Blob([data]);
+								        const url = window.URL.createObjectURL(blob);
+								        const link = document.createElement('a');
+								        link.href = url;
+								        link.download = 'translated.txt';
+								        link.click();
+								        window.URL.revokeObjectURL(url); // Liberar memoria
+								        cerrarCarga();
+								        Swal.fire({icon: "success",title:"Proceso finalizado con exito!"});
+								    },
+								    error: function(xhr, status, error) {
+									cerrarCarga();
+								        console.error("Error:", error);
+								          Swal.fire({icon: "error",title:"Ocurrio un problema en el proceso...",text:error});
+								    }
+								});
+					}
+				</script>
+					<div class="row">
+							<div class="col-2" >
+							</div  >
+							<div class="col-8 bg-white">
+								<form id="form" method="post" enctype="multipart/form-data">
+									<h4 class="bg-white">Cargar el PDF a procesar:</h4>
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> 
+									<!--<input type="hidden" name="_csrf" value="4bfd1575-3ad1-4d21-96c7-4ef2d9f86721"/>-->
+									<input type="file" name="file" id="archivo" />
+									<button class="btn btn-primary mb-2" id="procesar" >
+										<span class="glyphicon glyphicon-send"></span> Procesar...
+									</button>
+	
+								</form>
+							</div>
+					 </div>
+					<div class="row">	
+							<div class="col-2" >
+							<!--<button class="btn btn-primary mb-2" onclick="indicadorCarga();">
+										<span class="glyphicon glyphicon-send"></span> Barra prograso...
+									</button>-->
+							</div  >
+							<div class="col-8">	  
+								<div th:replace="layout/indicador01 :: indicador01" >
+		
+		            			</div>
+							</div>
+					</div>
+		<footer th:fragment="footer" class="container"> </footer>
+	</div>
+</body>
+</html >

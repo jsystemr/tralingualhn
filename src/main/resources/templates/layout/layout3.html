@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<title th:replace="layout/layout :: titulo"></title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+   <link rel="stylesheet" th:href="@{/css/bootstrap-glyphicons.css}"/>
+  <link rel="stylesheet" th:href="@{/css/botonflotante.css}"/>
+  <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+  <link rel="stylesheet" th:href="@{/css/dropmenu.css}"/>
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}"/>
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/js/bootstrap.js}"></script>
+   <!--   <script th:src="@{/js/funcionesJS.js}"></script> --> 
+</head>
+<header th:fragment="header" class="py-4">
+<ul class="nav">
+	<li class="nav-item"><a class="nav-link active" href="/marcas/">Marcas</a>
+	</li>
+	 <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle dropbtn" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Modelos
+        </a>
+         <div class="dropdown-content" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/modelos/listamodelos">Listado Modelos</a>
+          <a class="dropdown-item" href="/modelos/listamodelosp">Lista Modelos Paginados</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+	<li class="nav-item"><a class="nav-link" th:href="@{/login}">Login( <span sec:authentication="name"></span>)</a></li>
+	<li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a></li>
+	<li class="nav-item"><a class="nav-link"  href="/sessiones/index">Prueba Session</a></li>
+	<li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+</ul>
+<div class="alert alert-success" th:if="${success != null}" th:text="${success}"></div>
+<div class="alert alert-warning" th:if="${warning != null}" th:text="${warning}"></div>
+<div class="alert alert-danger"  th:if="${danger != null}"th:text="${danger}"></div>
+<div class="alert alert-info" th:if="${info != null}" th:text="${info}"></div>
+</header>
+<body  style="background-color: black;">
+<div th:fragment="logo">
+		<div class="row">
+			<!-- <img class="img-thumbnail rounded mx-auto d-block img-fluid"
+				th:src="@{/imagenes/logov3.PNG}" alt="Card image cap"> -->
+		</div>
+</div>
+
+<div th:fragment="body" class="container-fluid">
+	  <!---------------------------------Menu 1------------------------------>
+ <nav  th:fragment="sidebarnavad" id="sidebar" class="sidebar-wrapper">
+  	<div class="sidebar-content">
+	 	<div class="sidebar-brand">
+		        <a href="/productos/addpro">StudioK504</a>
+		        <div id="close-sidebar">
+		          <i class=""><span aria-hidden="true" class="glyphicon glyphicon-remove"></span></i>
+		        </div>
+		   </div>
+		<!--  Encabezado side-bar -->
+		<div th:fragment="sidebar-header" class="sidebar-header">
+			 <div class="user-pic">
+		          <img class="img-responsive img-rounded" src="/imagenes/logogv.jfif"
+		            alt="User picture">
+		        </div>
+		        <div class="user-info">
+		          <span class="user-name">
+		            <strong>Invitado</strong>
+		          </span>
+		          <span class="user-role">Invitado</span>
+		          <span class="user-status">
+		            <i class="fa fa-circle"></i>
+		            <span>Online</span>
+		          </span>
+		        </div>
+		</div>
+		 <!-- Menu Administrativo solo puede verlo el Administrador -->
+ <div th:fragment="menuadmin" >
+	<div sec:authorize="isAuthenticated()">
+		<div th:fragment="nombreusuario">
+			<div sec:authorize="isAuthenticated()">Authenticated as <span sec:authentication="name"></span>
+				<form th:action="@{/logout}" method="post">
+					<button class="btn btn-primary mb-2"><span class="glyphicon glyphicon-log-out"></span>Cerrar Session</button>
+				</form>
+			</div>
+		</div>
+		<ul  class="list-group" ><h4 class="bg-white">Lista Acciones:</h4>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/pedidos/reportepedidos}">Imprimir Pedidos</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/pedidos/todoslospedidos}">Todos los Pedidos</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/productos/addpro}">Crear Producto</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/productos/index}">Productos Activos</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/productos/proinactivos}">Productos Inactivos</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/pedidos/index}">Crear Pedido</a></li>
+			<li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/pedidos/listapedidosOpen}">Lista de Pedidos Pendientes</a></li>
+			<!-- <li class="list-group-item list-group-item-action btn-primary "><a th:href="@{/gdestroy}">Limpiar Pedidos sin Procesar</a></li> -->
+		</ul>
+	</div>
+</div>
+		<!-- Menu Empresas -->
+		<nav th:fragment="menuempresas">
+			<h5 class="bg-white mt-2 mb-0">Empresas</h5>
+					<nav class="navbar navbar-expand-lg navbar-light bg-light">
+						 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarEmp" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+						    <span class="navbar-toggler-icon"></span>
+						  </button>
+						   <div class="collapse navbar-collapse" id="navbarEmp">
+								<ul  class="list-group" >
+								<th:block th:each="emp : ${lemp}">
+								<li class="list-group-item list-group-item-action fondoli emppro" th:vid="${emp.id}" th:text="${emp.nombre}"><span class="glyphicon glyphicon-tags"></span></li>
+								</th:block>
+								</ul>
+							</div>
+					</nav>
+		</nav>
+		<!-- Menu Categoria, Comida, Bebida, etc. -->
+		<nav th:fragment="catmenu">
+			<h5 class="bg-white mt-2 mb-0">Menu por Categoria:</h5>
+			<nav class="navbar navbar-expand-lg navbar-light bg-light">
+				 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCat" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				    <span class="navbar-toggler-icon"></span>
+				  </button>
+				   <div class="collapse navbar-collapse" id="navbarCat">
+					<ul  class="list-group ">
+						<button class="btn btn-primary mb-2"  id="menuimg"><span class=" glyphicon glyphicon-picture"></span> Con Imagenes</button>
+						<!-- <button class="btn btn-primary mb-2" id="menunoimg"><span class=" glyphicon glyphicon-th-list"></span> Sin imagenes</button> -->
+						<th:block th:each="cat : ${lcat}">
+							<li class="list-group-item list-group-item-action fondoli catpro" th:vid="${cat.id}"><span th:text="${cat.categoria}"></span><span class="glyphicon glyphicon-tags"></span></li>
+						</th:block>
+					</ul>
+					</div>
+			</nav>
+		</nav>
+		<div>
+		<ul  class="">		
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+			<li >..<span class="glyphicon glyphicon-tags"></span></li>
+		</ul>
+		</div>
+	<!-- sidebar-content  -->
+	</div>
+			
+    <div th:fragment="pie-sidebar" class="sidebar-footer">
+	     <h4 class="bg-white">
+			Pedido Total L.<span class="badge badge-secondary"  th:text="${total>0?total:'0.00'}"></span>
+			<!-- <span 	class="glyphicon glyphicon-shopping-cart"></span> -->
+			<button class="btn btn-success" id="proscompra">
+				<span class="glyphicon glyphicon-shopping-cart"></span>Procesar
+			Compra
+		</button>
+			
+		<button class="btn btn-primary mb-2 mt-2" id="verpedido"
+			data-toggle="modal">
+			<span class=" glyphicon glyphicon-th-list"></span> Ver Pedido
+		</button>#<span class="badge badge-secondary" th:text="${n>0?n:'0'}" id="nproductos">
+			</span>
+		<form  th:action="@{destroy}" method="post">
+		<button type="submit" class="btn btn-primary mb-2">
+			<span class=" 	glyphicon  glyphicon-trash"></span> Limpiar
+			Pedido
+		</button>
+		</form>
+		</h4>
+     </div>
+	<script type="text/javascript">
+	$(function() {
+		
+		//funcion para mostrar menu con imagenes
+		$('#menuimg').on('click',function(){
+			var url = "[[@{productosmodel}]]";
+			console.log(url);
+			window.location.href = url;
+		});
+		
+		$('#menunoimg').on('click',function(){
+			var url = "[[@{listaproductos}]]";
+			console.log(url);
+			window.location.href = url;
+		});
+		/*********************************************/
+		  $(".sidebar-dropdown > a").click(function() {
+			  $(".sidebar-submenu").slideUp(200);
+			  if (
+			    $(this)
+			      .parent()
+			      .hasClass("active")
+			  ) {
+			    $(".sidebar-dropdown").removeClass("active");
+			    $(this)
+			      .parent()
+			      .removeClass("active");
+			  } else {
+			    $(".sidebar-dropdown").removeClass("active");
+			    $(this)
+			      .next(".sidebar-submenu")
+			      .slideDown(200);
+			    $(this)
+			      .parent()
+			      .addClass("active");
+			  }
+		});
+		//oculta el SideBar por Defecto
+		$(".page-wrapper").removeClass("toggled");
+		$("#close-sidebar").click(function() {
+		  $(".page-wrapper").removeClass("toggled");
+		});
+		$("#show-sidebar").click(function() {
+		  $(".page-wrapper").addClass("toggled");
+		});
+		/*********************************************/
+	});
+	</script>
+ </nav>	
+  <!---------------------------------Menu 2------------------------------>
+ <nav  th:fragment="sidebarnav" id="sidebar" class="sidebar-wrapper">
+	<div class="sidebar-content">
+	   <div class="sidebar-brand">
+			  <a href="/productos/addpro">Grupoluna.net</a>
+			  <div id="close-sidebar">
+				<i class=""><span aria-hidden="true" class="glyphicon glyphicon-remove"></span></i>
+			  </div>
+		 </div>
+	  <!--  Encabezado side-bar -->
+	  <div th:fragment="sidebar-header" class="sidebar-header">
+		   <div class="user-pic">
+				<img class="img-responsive img-rounded" th:src="@{/imagenes/logogv.jfif}" alt="User picture">
+			  </div>
+			  <div class="user-info">
+				<span class="user-name">
+				  <strong>Invitado</strong>
+				</span>
+				<span class="user-role">Invitado</span>
+				<span class="user-status">
+				  <i class="fa fa-circle"></i>
+				  <span>Online</span>
+				</span>
+			  </div>
+	  </div>
+	  <!-- Menu Empresas -->
+	  <nav th:fragment="menuempresas">
+		  <h5 class="bg-white mt-2 mb-0">Empresas</h5>
+				  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+					   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarEmp" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+						  <span class="navbar-toggler-icon"></span>
+						</button>
+						 <div class="collapse navbar-collapse" id="navbarEmp">
+							  <ul  class="list-group" >
+							  <th:block th:each="emp : ${lemp}">
+							  <li class="list-group-item list-group-item-action fondoli emppro" th:vid="${emp.id}" th:text="${emp.nombre}"><span class="glyphicon glyphicon-tags"></span></li>
+							  </th:block>
+							  </ul>
+						  </div>
+				  </nav>
+	  </nav>
+	  <!-- Menu Categoria, Comida, Bebida, etc. -->
+	  <nav th:fragment="catmenu">
+		  <h5 class="bg-white mt-2 mb-0">Menu por Categoria:</h5>
+		  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+			   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCat" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				  <span class="navbar-toggler-icon"></span>
+				</button>
+				 <div class="collapse navbar-collapse" id="navbarCat">
+				  <ul  class="list-group ">
+					  <button class="btn btn-primary mb-2"  id="menuimg"><span class=" glyphicon glyphicon-picture"></span> Con Imagenes</button>
+					  <!-- <button class="btn btn-primary mb-2" id="menunoimg"><span class=" glyphicon glyphicon-th-list"></span> Sin imagenes</button> -->
+					  <th:block th:each="cat : ${lcat}">
+						  <li class="list-group-item list-group-item-action fondoli catpro" th:vid="${cat.id}"><span th:text="${cat.categoria}"></span><span class="glyphicon glyphicon-tags"></span></li>
+					  </th:block>
+				  </ul>
+				  </div>
+			  </nav>
+	  </nav>
+	  <div>
+	  <ul  class="">		
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+	  </ul>
+	  </div>
+  <!-- sidebar-content  -->
+  </div>
+		  
+  <div th:fragment="pie-sidebar" class="sidebar-footer">
+	   <h4 class="bg-white">
+		  Pedido Total L.<span class="badge badge-secondary"  th:text="${total>0?#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span>
+		  <!-- <span 	class="glyphicon glyphicon-shopping-cart"></span> -->
+		  <button class="btn btn-success" id="proscompra">
+			  <span class="glyphicon glyphicon-shopping-cart"></span>Procesar
+		  Compra
+	  </button>
+		  
+	  <button class="btn btn-primary mb-2 mt-2" id="verpedido"
+		  data-toggle="modal">
+		  <span class=" glyphicon glyphicon-th-list"></span> Ver Pedido
+	  </button>#<span class="badge badge-secondary" th:text="${n>0?n:'0'}" id="nproductos">
+		  </span>
+	  <form  th:action="@{destroy}" method="post">
+	  <button type="submit" class="btn btn-primary mb-2">
+		  <span class=" 	glyphicon  glyphicon-trash"></span> Limpiar
+		  Pedido
+	  </button>
+	  </form>
+	  </h4>
+   </div>
+  <script type="text/javascript">
+  $(function() {
+	  
+	  //funcion para mostrar menu con imagenes
+	  $('#menuimg').on('click',function(){
+		  var url = "[[@{productosmodel}]]";
+		  console.log(url);
+		  window.location.href = url;
+	  });
+	  
+	  $('#menunoimg').on('click',function(){
+		  var url = "[[@{listaproductos}]]";
+		  console.log(url);
+		  window.location.href = url;
+	  });
+	  /*********************************************/
+		$(".sidebar-dropdown > a").click(function() {
+			$(".sidebar-submenu").slideUp(200);
+			if (
+			  $(this)
+				.parent()
+				.hasClass("active")
+			) {
+			  $(".sidebar-dropdown").removeClass("active");
+			  $(this)
+				.parent()
+				.removeClass("active");
+			} else {
+			  $(".sidebar-dropdown").removeClass("active");
+			  $(this)
+				.next(".sidebar-submenu")
+				.slideDown(200);
+			  $(this)
+				.parent()
+				.addClass("active");
+			}
+	  });
+	  //oculta el SideBar por Defecto
+	  $(".page-wrapper").removeClass("toggled");
+	  $("#close-sidebar").click(function() {
+		$(".page-wrapper").removeClass("toggled");
+	  });
+	  $("#show-sidebar").click(function() {
+		$(".page-wrapper").addClass("toggled");
+	  });
+	  /*********************************************/
+  });
+  </script>
+</nav>	
+
+</div>
+
+<div th:fragment="modal" >
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Grupo Luna</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenido al Sistema de Toma de Pedidos</p>
+        <label>Ingrese su Correo:</label>
+        <input type="email" class="form-control" id="correo" placeholder="name@example.com">
+         <label>Ingrese su numero de Telefono:</label>
+          <input type="tel" class="form-control" id="telefono" placeholder="9570-6655">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<footer  th:fragment="footer" class="container">
+
+</footer>
+</body>
+</html>

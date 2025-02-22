@@ -1,0 +1,12 @@
+<nav aria-label="Page navigation example">
+	  <ul  class="pagination">
+	  <li th:if="${modeloPage.totalPages > 0}" class="page-item page-link"
+    		th:each="pageNumber : ${pageNumbers}">
+		     <a th:href="@{/marcas/listamarcap(size=${modeloPage.size}, page=${pageNumber})}"
+	       		 th:text=${pageNumber}
+       		 	 th:class="${pageNumber==modeloPage.number + 1} ?active">	 	
+       		 </a>	
+       		 <span th:if="${pageNumber==modeloPage.number + 1} ?active" class="sr-only">(current)</span>
+        </li>
+	    </ul>
+</nav>

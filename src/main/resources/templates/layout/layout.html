@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<title  th:fragment="titulo">Sistema</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+   <link rel="stylesheet" th:href="@{/css/bootstrap-glyphicons.css}"/>
+  <link rel="stylesheet" th:href="@{/css/botonflotante.css}"/>
+  <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+  <link rel="stylesheet" th:href="@{/css/dropmenu.css}"/>
+  <link rel="stylesheet" th:href="@{/css/stylepersonalize.css}"/>
+  <link rel="canonical" href="https://getbootstrap.com/docs/4.1/content/tables/">
+  <!--<script  th:src="@{/js/jquery-1.12.4.js}"></script> -->
+  <script  th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery-ui.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/jquery-ui-cupertino.css}">
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}"/>
+  <script th:src="@{/js/bootstrap.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script type="text/javascript">
+  				  		
+  </script>
+
+</head>
+<header th:fragment="header" class="py-4">
+<ul class="nav nav-tabs">
+	<li class="nav-item"><a class="nav-link active" href="/marcas/">Marcas</a>
+	</li>
+	 <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle dropbtn" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Modelos
+        </a>
+         <div class="dropdown-content" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/modelos/listamodelos">Listado Modelos</a>
+          <a class="dropdown-item" href="/modelos/listamodelosp">Lista Modelos Paginados</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+	<li class="nav-item"><a class="nav-link" th:href="@{/login}">Login( <span sec:authentication="name"></span>)</a></li>
+	<li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a></li>
+	<li class="nav-item"><a class="nav-link"  href="/sessiones/index">Prueba Session</a></li>
+	<li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+</ul>
+
+</header>
+<body>
+<div th:fragment="logo">
+ 
+    	<header style="height: 30px;">
+	
+	 </header>
+			
+		<div  th:fragment="logoempresa">
+    		<img class="rounded mx-auto d-block img-fluid" width="200px" height="70px"
+				th:src="@{'/imagenes/LogoEmpresa.png'}" alt="Card image cap">
+		</div>
+
+<div th:fragment="body" class="container-fluid">
+</div>
+</div>
+		<div th:fragment="zonalertas">
+		<div class="alert alert-success"  th:if="${success != null}"  role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong th:text="${success}"></strong>
+		</div>
+		<div class="alert alert-warning" th:if="${warning != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong  th:text="${warning}"></strong>
+		</div>
+		<div class="alert alert-danger"  th:if="${danger != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong th:text="${danger}"></strong>
+		</div>
+		<div class="alert alert-info" th:if="${info != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong  th:text="${info}"></strong>
+		</div>
+<nav  th:fragment="menuvertical" class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="sidebar-content">
+	   <div class="sidebar-brand">
+			  <a href="/productos/addpro">Grupoluna.net</a>
+			  <div id="close-sidebar">
+				<i class=""><span aria-hidden="true" class="glyphicon glyphicon-remove"></span></i>
+			  </div>
+		 </div>
+	  <!--  Encabezado side-bar -->
+	  <div th:fragment="sidebar-header" class="sidebar-header">
+		   <div class="user-pic">
+				<img class="img-responsive img-rounded" th:src="@{/imagenes/logogv.jfif}" alt="User picture">
+			  </div>
+			  <div class="user-info">
+				<span class="user-name">
+				  <strong>Invitado</strong>
+				</span>
+				<span class="user-role">Invitado</span>
+				<span class="user-status">
+				  <i class="fa fa-circle"></i>
+				  <span>Online</span>
+				</span>
+			  </div>
+	  </div>
+	  <!-- Menu Empresas -->
+	  <nav th:fragment="menuempresas">
+		  <h5 class="bg-white mt-2 mb-0">Empresas</h5>
+				  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+					   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarEmp" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+						  <span class="navbar-toggler-icon"></span>
+						</button>
+						 <div class="collapse navbar-collapse" id="navbarEmp">
+							  <ul  class="list-group" >
+							  <th:block th:each="emp : ${lemp}">
+							  <li class="list-group-item list-group-item-action fondoli emppro" th:vid="${emp.id}" th:text="${emp.nombre}"><span class="glyphicon glyphicon-tags"></span></li>
+							  </th:block>
+							  </ul>
+						  </div>
+				  </nav>
+	  </nav>
+	  <!-- Menu Categoria, Comida, Bebida, etc. -->
+	  <nav th:fragment="catmenu">
+		  <h5 class="bg-white mt-2 mb-0">Menu por Categoria:</h5>
+		  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+			   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCat" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				  <span class="navbar-toggler-icon"></span>
+				</button>
+				 <div class="collapse navbar-collapse" id="navbarCat">
+				  <ul  class="list-group ">
+					  <button class="btn btn-primary mb-2"  id="menuimg"><span class=" glyphicon glyphicon-picture"></span> Con Imagenes</button>
+					  <!-- <button class="btn btn-primary mb-2" id="menunoimg"><span class=" glyphicon glyphicon-th-list"></span> Sin imagenes</button> -->
+					  <th:block th:each="cat : ${lcat}">
+						  <li class="list-group-item list-group-item-action fondoli catpro" th:vid="${cat.id}"><span th:text="${cat.nombrecategoria}"></span><span class="glyphicon glyphicon-tags"></span></li>
+					  </th:block>
+				  </ul>
+				  </div>
+			  </nav>
+	  </nav>
+	  <div>
+	  <ul  class="">		
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+		  <li >..<span class="glyphicon glyphicon-tags"></span></li>
+	  </ul>
+	  </div>
+  <!-- sidebar-content  -->
+  </div>
+		  
+  <div th:fragment="pie-sidebar" class="sidebar-footer">
+	   <h4 class="bg-white">
+		  Pedido Total L.<span class="badge badge-secondary"  th:text="${total>0?#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span>
+		  <!-- <span 	class="glyphicon glyphicon-shopping-cart"></span> -->
+		  <button class="btn btn-success" id="proscompra">
+			<span class="glyphicon glyphicon-shopping-cart"></span>Procesar Pedido
+	 	 </button>
+		  <button class="btn btn-success" id="pfactura">
+			<span class="glyphicon glyphicon-shopping-cart"></span>Procesar Factura
+	 	 </button>
+	  <button class="btn btn-primary mb-2 mt-2" id="verpedidoObj"  data-toggle="modal"><!-- verpedido -->
+		  <span class=" glyphicon glyphicon-th-list"></span> Ver Pedido
+	  </button>#<span class="badge badge-secondary" th:text="${n>0?n:'0'}" id="nproductos">
+		  </span>
+	  <form  th:action="@{destroy}" method="post">
+	  <button type="submit" class="btn btn-primary mb-2">
+		  <span class=" 	glyphicon  glyphicon-trash"></span> Limpiar
+		  Pedido
+	  </button>
+	  </form>
+	  </h4>
+   </div>
+  <script type="text/javascript">
+  $(function() {
+  
+	  //funcion para mostrar menu con imagenes
+	  $('#menuimg').on('click',function(){
+		  var url = "[[@{productosmodel}]]";
+		  console.log(url);
+		  window.location.href = url;
+	  });
+	  
+	  $('#menunoimg').on('click',function(){
+		  var url = "[[@{listaproductos}]]";
+		  console.log(url);
+		  window.location.href = url;
+	  });
+	  /*********************************************/
+		$(".sidebar-dropdown > a").click(function() {
+			$(".sidebar-submenu").slideUp(200);
+			if (
+			  $(this)
+				.parent()
+				.hasClass("active")
+			) {
+			  $(".sidebar-dropdown").removeClass("active");
+			  $(this)
+				.parent()
+				.removeClass("active");
+			} else {
+			  $(".sidebar-dropdown").removeClass("active");
+			  $(this)
+				.next(".sidebar-submenu")
+				.slideDown(200);
+			  $(this)
+				.parent()
+				.addClass("active");
+			}
+	  });
+	  //oculta el SideBar por Defecto
+	  $(".page-wrapper").removeClass("toggled");
+	  $("#close-sidebar").click(function() {
+		$(".page-wrapper").removeClass("toggled");
+	  });
+	  $("#show-sidebar").click(function() {
+		$(".page-wrapper").addClass("toggled");
+	  });
+	  /*********************************************/
+  });
+  </script>	
+</nav>
+<nav th:fragment="paginacionv1"  aria-label="Page navigation example" class="m-3">
+								  <ul  class="pagination">
+								 	 <li class="page-item page-link"> 
+								         <a th:href="@{${ruta}(size=${size}, page=${1})}">Inicio</a>
+									 </li>
+								  	<li class="page-item page-link"> 
+								         <a th:if="${currentPage > 1}" th:href="@{${ruta}(size=${size}, page=${currentPage-1})}">Anterior</a>
+										<span th:unless="${currentPage>1}">Anterior</span>
+									</li>
+									<li class="page-item page-link">
+										<span >
+										        <a th:classappend="${'badge badge-info'}" th:if="${i != currentPage}" th:href="@{${ruta}(size=${size}, page=${i})}">Pagina [[${currentPage}]] de [[${totalPages}]]</a>
+										        <span th:unless="${i != currentPage}">Pagina [[${currentPage}]] de [[${totalPages}]]</span>
+										</span>
+									</li>
+									<li class="page-item page-link"> 
+								         <a th:if="${currentPage < totalPages}" th:href="@{${ruta}(size=${size}, page=${currentPage+1})}">Siguiente</a>
+										<span th:unless="${currentPage < totalPages}">Siguiente</span>
+									 </li>
+									 <li class="page-item page-link"> 
+								         <a th:if="${currentPage<totalPages}" th:href="@{${ruta}(size=${size}, page=${totalPages})}">Fin</a>
+										<span th:unless="${currentPage<totalPages}">Fin</span>
+									 </li>
+								    </ul>
+</nav>
+<nav aria-label="Page navigation example" th:fragment="paginacionv2" class="m-t-5">
+								  <ul  class="pagination">
+								  <li th:if="${totalPages > 0}" class="page-item page-link"
+							    		th:each="pageNumber : ${pageNumbers}">
+									     <a th:href="@{${ruta}(size=${size}, page=${pageNumber})}"
+								       		 th:text=${pageNumber}
+							       		 	 th:class="${pageNumber==currentPage + 1} ?active">	 	
+							       		 </a>	
+							       		 <span th:if="${pageNumber==currentPage + 1} ?active" class="sr-only">(current)</span>
+							        </li>
+								    </ul>
+</nav>
+
+<div th:fragment="modal" >
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Restaurante CHAN LIU</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenido al Sistema de Toma de Pedidos</p>
+        <label>Ingrese su Correo:</label>
+        <input type="email" class="form-control" id="correo" placeholder="name@example.com">
+         <label>Ingrese su numero de Telefono:</label>
+          <input type="tel" class="form-control" id="telefono" placeholder="9570-6655">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<footer  th:fragment="footer" class="container">
+
+</footer>
+<!-- Modal Pedidos -->
+<div th:fragment="modalpedido" class="modal" tabindex="-1" role="dialog" data-target=".pdido" id="pdido">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 >
+							Su Pedido: Total <span class="badge badge-secondary"
+							th:text="${total>0?'L.'+#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span></h4>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<ul th:each="m,mStat: ${pedido}" class="list-group" id="list-tab"
+								role="tablist" data-toggle="list">
+								<li class="list-group-item list-group-item-action mt-2">
+								<span class="badge badge-secondary"
+							th:text="${mStat.index+1}"></span>
+									<button type="button" class="close" data-dismiss="alert"
+										aria-label="Close" th:id="${mStat.index}"
+										th:onclick="|javascript:delProducto('${mStat.index}')|">
+										<span aria-hidden="true"
+											class="glyphicon glyphicon-remove-circle "></span>
+									</button>
+									 <!--<img class="card-img-top img-thumbnail rounded mx-auto d-block img-fluid"
+									th:src="${(utilidad.getImagenString(m.foto)!=null)?'/uploads/'+utilidad.getImagenString(m.foto):'/imagenes/indice.svg'}"
+									alt="Card image cap" style="max-width:180px; height:150px;">
+                                     th:src="${!(#strings.isEmpty(imgpedido))?'data:image/png;base64,'+imgpedido[mStat.index]:'/imagenes/indice.svg'}" --> 
+									<p th:text="${m}">Producto..</p>
+								</li>
+							</ul>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+							<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+	</div>
+</div>
+
+<!-- Modal Pedidos con Objetos -->
+<div th:fragment="modalpedidoOb" class="modal" tabindex="-1" role="dialog" data-target=".pdidoOb" id="pdidoOb">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 >
+							Su Pedido: Total <span class="badge badge-secondary"
+							th:text="${total>0?'L.'+#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span></h4>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+						<th:block th:if="${n>0}">
+							<ul th:each="m: ${pedido}" class="list-group" id="list-tab"
+								role="tablist" data-toggle="list">
+								<li class="list-group-item list-group-item-action mt-2">
+								<span class="badge badge-secondary" th:text="${m.key}"></span>
+									<button type="button" class="close" data-dismiss="alert"
+										aria-label="Close" th:id="${m.key}" onclick="javascript:delProducto($(this).attr('id'))">
+										<span aria-hidden="true"
+											class="glyphicon glyphicon-remove-circle "></span>
+									</button>
+								 	<img class="card-img-top img-thumbnail rounded mx-auto d-block img-fluid"
+									th:src="${#strings.isEmpty(m.value.getFoto())?'/imagenes/indice.svg':'/uploads/'+m.value.getFoto()}"
+									alt="Card image cap" style="max-width:180px; height:150px;">
+                                   <!--  th:src="${!(#strings.isEmpty(imgpedido))?'data:image/png;base64,'+imgpedido[mStat.index]:'/imagenes/indice.svg'}"
+									 --> 
+									 <p th:text="${m.value.verPedido3()}">Producto..</p>
+								</li>
+							</ul>
+							</th:block>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+							<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+	</div>
+</div>
+
+<!-- Modal Pago -->
+<div th:fragment="modalpago" class="modal" tabindex="-1" role="dialog" data-target=".pcompra" id="pcompra">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Ingrese los datos para procesar su
+								pedido. <br/>Total <span class="badge badge-secondary"
+							th:text="${total>0?'L.'+#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span></h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form class="frmcompra" th:action="@{/pedidos/guardarPedidolistaObj}"
+								method="post">
+								<!-- <textarea name="msg" class="control-group" style="width: 100%;"></textarea> -->
+								<input type="hidden" name="total" class="form-control"
+									id="total" th:value="${total>0?total:'0.00'}">
+								 <h4>Tipo de Orden:
+									 	<select id="tipoorden"  name="tipoorden" class="form-control" required >
+									 	<!--  <option value="-1" >---Seleccione un tipo de orden-- </option> -->
+										    <option th:each="e : ${ltpo}" th:value="${e.id+':'+e.tipo}" th:text="${e.tipo}">
+										    </option>
+										</select>
+									</h4>
+								<h4 class="bg-white">(*) Ingrese su Correo:</h4>
+								<input type="email" name="correo" class="form-control"
+									id="correo" placeholder="name@example.com" required>
+								<h4 class="bg-white">(*) Ingrese su numero de Telefono:</h4>
+								<input type="tel" class="form-control" name="telefono"
+									id="telefono" placeholder="9570-6655" required> 
+									<h4 class="bg-white">(*) Ingrese su Nombre(opcional):</h4>
+								<input type="text" class="form-control" name="nombre"
+									id="nombre" placeholder="Juan Carlos Doe" > 
+								<input type="hidden" class="form-control" name="rtn"
+									id="rtn" placeholder="0318199802051" > 
+							   <h4 class="bg-white">(*) Direccion de Envio:</h4>
+							   <textarea rows="3" cols="65" name="direccion" required></textarea>
+								<input name="latitud" class="form-control" id="lati" type="hidden" >
+								<input name="longitud"class="form-control" id="longi" type="hidden" >	
+												<button class="btn btn-primary ">
+								<span class="glyphicon glyphicon-send"></span> Enviar Pedido
+								</button>
+								<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Agregar mas productos</button>
+								<hr>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+<!-- Modal Factura -->
+<div th:fragment="modalfactura" class="modal" tabindex="-1" role="dialog" data-target=".factura" id="factura">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Ingrese los datos para procesar su
+								Factura. </h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form class="frmcompra" th:action="@{/facturas/guardarFactura}"
+								method="post">
+									<input  type="hidden" name="total" class="form-control"
+										id="total" th:value="${total>0?total:'0.00'}">
+									 <h4 >Tipo de Factura:
+										 	<select id="tipofactura"  name="tipofactura" class="form-control" required >
+										 	<!--  <option value="-1" >---Seleccione un tipo de orden-- </option> -->
+											    <option th:each="e : ${ltf}" th:value="${e.id}" th:text="${e.tipo}">
+											    </option>
+											</select>
+										</h4>
+							<h4 class="bg-white">Cliente :<span id="nomclitxt"></span></h4>
+							<input type="hidden" class="form-control" name="identidadcli" id="identidadcli" value="-1">
+							<input type="hidden" class="form-control" name="nomcli" id="nomcli" value="Consumidor Final"> 
+							<input type="hidden" class="form-control" name="saldocli" id="saldocli"> 
+									<input type="text" class="form-control" name="nombrecliente"
+										id="nombrecliente" value="Consumidor Final" placeholder="Juan Carlos Doe" required> 
+									<h4 class="bg-white">RTN/Otro Dato:</h4>
+									<input type="text" class="form-control" name="rtn"
+										id="rtn" placeholder="0318199802051" > 
+										<h4 class="bg-white">Telefono:</h4>
+									<input type="text" class="form-control" name="telefonocli"
+										id="telefonocli" placeholder="9559-4490" > 
+									<input name="latitud" class="form-control" id="lati" type="hidden" >
+									<input name="longitud"class="form-control" id="longi" type="hidden" >							
+								<h3 style="text-align: right;">Total a Pagar: <!-- class="badge badge-secondary" -->
+									<span th:text="${total>0?'L.'+#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT'):'0.00'}"></span>
+									</h3>
+									<h3 style="text-align: right;">Descuento: <!-- class="badge badge-secondary" -->
+										L. <input style="text-align: right;font-weight: bold;width:120px;" type="number" 
+										name="descuento" id="descuento" required="required" min="0" value="0"/>
+									</h3>
+									<h3 style="text-align: right;">Efectivo: <!-- class="badge badge-secondary" -->
+										L. <input style="text-align: right;font-weight: bold;width:120px;" type="number" name="efectivo" id="efectivo" required="required" min="0" />
+									</h3>
+									<hr>
+									<h3 style="text-align: right;">Cambio: <!-- class="badge badge-secondary" -->
+									<span id="cambiotxt">L. 0.00</span>
+									<input style="text-align: right;font-weight: bold;width:120px;" 
+										type="hidden" name="cambio" id="cambio" required="required" min="0" value="0" />
+									</h3>
+									<span id="msgcambio" style="color: red;"></span>
+									<h3 style="text-align: right;">Saldo: <!-- class="badge badge-secondary" -->
+										L. <input style="text-align: right;font-weight: bold;width:120px;" 
+										type="number" name="saldo" id="saldo" required="required" min="0" value="0" />
+									</h3>
+									<hr>
+								<button class="btn btn-primary " id="btnsendfac">
+								<span class="glyphicon glyphicon-send"></span> Enviar Factura
+								</button>
+								<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Agregar mas productos</button>
+
+							</form>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+
+						</div>
+					</div>
+				</div>
+			</div>			
+
+</body>
+</html>

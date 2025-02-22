@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head th:fragment="head">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+<title>Sistema de Facturacion</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+   <link rel="stylesheet" th:href="@{/css/bootstrap-glyphicons.css}"/>
+  <link rel="stylesheet" th:href="@{/css/botonflotante.css}"/>
+  <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+  <link rel="stylesheet" th:href="@{/css/dropmenu.css}"/>
+  <link rel="stylesheet" th:href="@{/css/stylepersonalize.css}"/>
+  <script  th:src="@{/js/jquery-1.12.4.js}"></script> 
+   <script th:src="@{/js/jquery.js}"></script>
+  <script th:src="@{/js/bootstrap.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery-ui.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/jquery-ui-cupertino.css}">
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}"/>
+   <!--   <script th:src="@{/js/funcionesJS.js}"></script> --> 
+</head>
+<header th:fragment="header" class="py-4">
+<ul class="nav nav-tabs">
+	<li class="nav-item"><a class="nav-link active" href="/marcas/">Marcas</a>
+	</li>
+	 <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle dropbtn" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Modelos
+        </a>
+         <div class="dropdown-content" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/modelos/listamodelos">Listado Modelos</a>
+          <a class="dropdown-item" href="/modelos/listamodelosp">Lista Modelos Paginados</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+	<li class="nav-item"><a class="nav-link" th:href="@{/login}">Login( <span sec:authentication="name"></span>)</a></li>
+	<li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a></li>
+	<li class="nav-item"><a class="nav-link"  href="/sessiones/index">Prueba Session</a></li>
+	<li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+</ul>
+
+</header>
+<body>
+<div th:fragment="logo">
+</div>
+<div th:fragment="body" class="container-fluid">
+	 <div th:include="menunav">
+    </div>
+</div>
+		<div th:fragment="zonalertas">
+		<div class="alert alert-success"  th:if="${success != null}"  role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong th:text="${success}"></strong>
+		</div>
+		<div class="alert alert-warning" th:if="${warning != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong  th:text="${warning}"></strong>
+		</div>
+		<div class="alert alert-danger"  th:if="${danger != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong th:text="${danger}"></strong>
+		</div>
+		<div class="alert alert-info" th:if="${info != null}" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong  th:text="${info}"></strong>
+		</div>
+<nav  th:fragment="menuvertical" class="navbar navbar-expand-lg navbar-light bg-light">
+			<!-- <div class="col-2 flex-column" style="background-color:white;"> -->
+				<!-- Nav tabs -->
+				  <button class="navbar-toggler bg-light" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				    <span class="navbar-toggler-icon"></span>
+				  </button>
+				<div class="collapse navbar-collapse " id="navbarText">
+					<ul class="nav flex-column nav-pills container-fluid " id="myTab" role="tablist">
+					  <li class="nav-item">
+					    <a class="nav-link active" id="home-tab"   th:href="@{/producto/index}" role="tab" aria-controls="home" aria-selected="true">Inicio</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" id="profile-tab"  th:href="@{/empresa/index}" role="tab" aria-controls="profile" aria-selected="false">Empresas</a>
+					  </li>
+					    <li class="nav-item">
+					    <a class="nav-link" id="messages-tab"  th:href="@{/productoadmin/index}" role="tab" aria-controls="messages" aria-selected="false">Catalogo de Productos</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" id="messages-tab"  th:href="@{/producto/index}" role="tab" aria-controls="messages" aria-selected="false">Productos a la Venta</a>
+					  </li>
+					  <li class="nav-item">
+					    <!-- Example single danger button -->
+							<div class="card-header">
+							   <button type="button" class="btn btn-success  " data-toggle="collapse" href="#multiCollapseExample2" aria-haspopup="true" aria-expanded="false">
+							   Pedidos
+							    </button>
+							  <div class="collapse multi-collapse" id="multiCollapseExample2">
+							  <div class="dropdown-divider"></div>
+							    <a class="card card-body" th:href="@{/}">Realizar Pedido</a><!-- th:href="@{/carritocompras/index}" -->
+							     <div class="dropdown-divider"></div>
+							    <a class="card card-body" th:href="@{/pedidos/listapedidosOpen}">Listado de Pedidos</a>
+							    <div class="dropdown-divider"></div>
+							    <a class="card card-body" href="#">Estadistica de Pedidos</a>
+							    <div class="dropdown-divider"></div>
+							  </div>
+							</div>
+					  </li>
+					  <li class="nav-item">
+					    <!-- Example single danger button -->
+							<div class="card-header">
+							   <button type="button" class="btn btn-success  " data-toggle="collapse" href="#multiCollapseExample3" aria-haspopup="true" aria-expanded="false">
+							   Kardex(Entrada y Salida de Productos)
+							    </button>
+							  <div class="collapse multi-collapse" id="multiCollapseExample3">
+							  <div class="dropdown-divider"></div>
+							    <a class="card card-body" th:href="@{/kardexe/index}">Nuevo Kardex</a><!-- th:href="@{/carritocompras/index}" -->
+							     <div class="dropdown-divider"></div>
+							    <a class="card card-body" th:href="@{/kardexe/listadokardex}">Listado de Kardex</a>
+							    <div class="dropdown-divider"></div>
+							     <a class="card card-body" th:href="@{/kardexe/listadokardexfecha}">Listado de Kardex por Fechas</a>
+							    <div class="dropdown-divider"></div>
+							    <a class="card card-body" href="#">Estadistica de Kardex</a>
+							    <div class="dropdown-divider"></div>
+							  </div>
+							</div>
+					  </li>
+					  <li class="nav-item">
+					    <!-- Example single danger button -->
+							<div class="card-header">
+							   <button type="button" class="btn btn-success  " data-toggle="collapse" href="#multiCollapseExample4" aria-haspopup="true" aria-expanded="false">
+							   Kardex Historico(Entrada y Salida de Productos)
+							    </button>
+							  <div class="collapse multi-collapse" id="multiCollapseExample4">
+							     <div class="dropdown-divider"></div>
+							    <a class="card card-body" th:href="@{/kardexe/listadokardexkh}">Listado de Kardex Historico</a>
+							    <div class="dropdown-divider"></div>
+							    <a class="card card-body" href="#">Estadistica de Kardex Historico</a>
+							    <div class="dropdown-divider"></div>
+							  </div>
+							</div>
+					  </li>
+					</ul>
+				</div>
+			<!-- </div> -->
+			</nav>
+<div th:fragment="modal" >
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Restaurante CHAN LIU</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenido al Sistema de Toma de Pedidos</p>
+        <label>Ingrese su Correo:</label>
+        <input type="email" class="form-control" id="correo" placeholder="name@example.com">
+         <label>Ingrese su numero de Telefono:</label>
+          <input type="tel" class="form-control" id="telefono" placeholder="9570-6655">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<footer  th:fragment="footer" class="container">
+
+</footer>
+<!-- Modal Pedidos -->
+<div th:fragment="modalpedido" class="modal" tabindex="-1" role="dialog" data-target=".pdido" id="pdido">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 >
+							Su Pedido: Total L.<span class="badge badge-secondary"
+							th:text="${total>0?total:'0.00'}"></span></h4>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<ul th:each="m,mStat: ${pedido}" class="list-group" id="list-tab"
+								role="tablist" data-toggle="list">
+								<li class="list-group-item list-group-item-action mt-2">
+								<span class="badge badge-secondary"
+							th:text="${mStat.index+1}"></span>
+									<button type="button" class="close" data-dismiss="alert"
+										aria-label="Close" th:id="${mStat.index}"
+										th:onclick="|javascript:delProducto('${mStat.index}')|">
+										<span aria-hidden="true"
+											class="glyphicon glyphicon-remove-circle "></span>
+									</button>
+									<img class="img-thumbnail rounded mx-auto d-block img-fluid" 
+										th:src="${'data:image/png;base64,'+imgpedido[mStat.index]}"  alt="Card image cap" style="max-width:80px; height:70px;">
+									<p th:text="${m}">Producto..</p>
+								</li>
+							</ul>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+							<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+	</div>
+</div>
+<!-- Modal Pago -->
+<div th:fragment="modalpago" class="modal" tabindex="-1" role="dialog" data-target=".pcompra"
+				id="pcompra">
+				<div class="modal-dialog modal-dialog-scrollable" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Ingrese los datos para procesar su
+								pedido. <br/>Total L. <span class="badge badge-secondary"
+							th:text="${total>0?total:'0.00'}"></span></h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true" class="glyphicon glyphicon-remove"></span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form class="frmcompra" th:action="@{guardarPedidolista}"
+								method="post">
+								<!-- <textarea name="msg" class="control-group" style="width: 100%;"></textarea> -->
+								<input type="hidden" name="total" class="form-control"
+									id="total" th:value="${total>0?total:'0.00'}">
+								 <h4>Tipo de Orden:
+									 	<select id="tipoorden"  name="tipoorden" class="form-control" required >
+									 	<!--  <option value="-1" >---Seleccione un tipo de orden-- </option> -->
+										    <option th:each="e : ${ltpo}" th:value="${e.id+':'+e.tipo}" th:text="${e.tipo}">
+										    </option>
+										</select>
+									</h4>
+								<h4 class="bg-white">(*) Ingrese su Correo:</h4>
+								<input type="email" name="correo" class="form-control"
+									id="correo" placeholder="name@example.com" required>
+								<h4 class="bg-white">(*) Ingrese su numero de Telefono:</h4>
+								<input type="tel" class="form-control" name="telefono"
+									id="telefono" placeholder="9570-6655" required> 
+									<h4 class="bg-white">(*) Ingrese su Nombre(opcional):</h4>
+								<input type="text" class="form-control" name="nombre"
+									id="nombre" placeholder="Juan Carlos Doe" > 
+								<input type="hidden" class="form-control" name="rtn"
+									id="rtn" placeholder="0318199802051" > 
+							   <h4 class="bg-white">(*) Direccion de Envio:</h4>
+							   <textarea rows="3" cols="65" name="direccion" required></textarea>
+								<input name="latitud" class="form-control" id="lati" type="hidden" >
+								<input name="longitud"class="form-control" id="longi" type="hidden" >	
+												<button class="btn btn-primary ">
+								<span class="glyphicon glyphicon-send"></span> Enviar Pedido
+								</button>
+								<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">Agregar mas productos</button>
+								<hr>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<!--  <button type="button" class="btn btn-primary">Save changes</button> -->
+
+						</div>
+					</div>
+				</div>
+			</div>
+</body>
+</html>

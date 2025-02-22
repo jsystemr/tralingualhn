@@ -33,6 +33,6 @@ public class SecurityConfig {
             .authorizeRequests(auth -> auth
                 .anyRequest().authenticated()
             );
-        return http.build();*/
-    }
+        return http.build();
+    }*/
 }

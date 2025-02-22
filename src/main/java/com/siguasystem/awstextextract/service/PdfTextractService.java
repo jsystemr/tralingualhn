@@ -46,8 +46,45 @@ public class PdfTextractService {
 	/*---------------------------------------------------------*/
 	private static SimpleDateFormat formatterFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-    public PdfTextractService() {
+        
+    public String getAccessKey() {
+                return accessKey;
+        }
 
+        public void setAccessKey(String accessKey) {
+                this.accessKey = accessKey;
+        }
+
+        public String getSecretKey() {
+                return secretKey;
+        }
+
+        public void setSecretKey(String secretKey) {
+                this.secretKey = secretKey;
+        }
+
+        public String getRegion() {
+                return region;
+        }
+
+        public void setRegion(String region) {
+                this.region = region;
+        }
+
+        public String getBucketName() {
+                return bucketName;
+        }
+
+        public void setBucketName(String bucketName) {
+                this.bucketName = bucketName;
+        }
+
+public PdfTextractService() {
+        /*Variables AWS se reemplazaraon por variables de session*/
+        setAccessKey(System.getenv("textractAccessKey"));
+        setSecretKey(System.getenv("textractSecretKey"));
+        setRegion("us-east-2");
+        setBucketName("tralingual-ocr-pdf-hn");
         this.textractClient = TextractClient.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(

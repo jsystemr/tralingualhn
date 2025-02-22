@@ -18,12 +18,20 @@ public class SecurityConfig {
 		XorCsrfTokenRequestAttributeHandler requestHandler = new XorCsrfTokenRequestAttributeHandler();
 		// set the name of the attribute the CsrfToken will be populated on
 		requestHandler.setCsrfRequestAttributeName(null);
-		http
+		/* http
 			// ...
 			.csrf((csrf) -> csrf
 				.csrfTokenRequestHandler(requestHandler)
 			);
-		return http.build();
+		return http.build();*/
+		http
+		// ...
+		.csrf(csrf ->csrf.disable())
+		.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api-tra/**").permitAll() // Permite acceso público
+                .anyRequest().authenticated()
+		);
+	return http.build();
 	}
 	/*  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

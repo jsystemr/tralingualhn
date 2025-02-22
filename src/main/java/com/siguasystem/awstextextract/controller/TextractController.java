@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api")
 public class TextractController {
 	private static SimpleDateFormat formatterFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 	

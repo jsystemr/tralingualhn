@@ -22,7 +22,7 @@ import com.siguasystem.awstextextract.service.PdfTextractService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("api-pdf")
+@RequestMapping("/api-pdf")
 public class PdfTextractController {
 	
 	  private  String fcreacion="";

@@ -194,5 +194,57 @@ public class FileTaductorController {
 	            throw new RuntimeException("Error procesando el archivo", e);
 	        }
 	    }
+
+		@PostMapping("/traducir-pdf-imagens3-a-ingles-pdf")
+	    public ResponseEntity<?>  translatePdfImagenS3Pdf(
+	            @RequestParam("file") MultipartFile file,
+	            @RequestParam(defaultValue = "auto") String sourceLang,
+	            @RequestParam(defaultValue = "en") String targetLang) {
+	        HttpHeaders headers = new HttpHeaders();
+	        try {
+	        	
+	        	 // Guardar el archivo temporalmente
+	            File tempFile = File.createTempFile("temp-", ".pdf");
+	           
+	            file.transferTo(tempFile);
+	            // Extraer texto
+	            List<String> lisTextractedText = pdfImgService.convertirPdfToImgS3(tempFile.getName(),file);//Envia nombre archivo y archivo adjunto
+	            String carpetaFile=lisTextractedText.get(0).substring(0, lisTextractedText.get(0).lastIndexOf("\\"));
+	            tempFile.delete();
+	            StringBuilder txtunido=new StringBuilder();
+	            byte[] txtBytes=new byte[10];
+	            Integer x=0;
+	            for (String rutaimg : lisTextractedText) {
+	            	x++;
+	            	 File tempImgFile = new File(rutaimg);	
+	 	            // Extraer texto
+	            	 txtunido.append("\n-----------------------Pag."+(x)+"---------------------------\n");
+	            	 txtunido.append(textractService.extractTextFromImage(tempImgFile.getAbsolutePath()));
+	            	 txtunido.append("\n----------------------------------------------------------------\n");
+		 	           try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} // Espera 5 segundos (ajusta según necesidad)
+		 	          tempImgFile.delete();
+				}	            
+	            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
+	         // 2. Generar el PDF
+	            byte[] pdfBytes = pdfImgService.convertTxtToPdf(translatedText);
+	            // 3. Eliminar Carpete Temporal
+	            Path folderPath = Paths.get(carpetaFile);
+                Files.delete(folderPath);
+	            headers.setContentType(MediaType.APPLICATION_PDF);
+	            headers.setContentDispositionFormData("attachment", "traduccion"+".pdf");
+
+	            return ResponseEntity.ok()
+	                    .headers(headers)
+	                    .body(pdfBytes);
+	            
+	        } catch (IOException e) {
+	            throw new RuntimeException("Error procesando el archivo", e);
+	        }
+	    }
 	
 }

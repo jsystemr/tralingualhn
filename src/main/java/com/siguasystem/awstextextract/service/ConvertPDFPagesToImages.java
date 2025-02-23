@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ConvertPDFPagesToImages {
@@ -47,15 +48,15 @@ public class ConvertPDFPagesToImages {
 	            File destinationFile = new File(destinationDir+sourceFile.getName());
 	            if (!destinationFile.exists()) {
 	                destinationFile.mkdir();
-	                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
 	            }
 	            if (sourceFile.exists()) {
-	                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+	                logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
 	                PDDocument document = PDDocument.load(sourceFile);
 	                PDFRenderer pdfRenderer = new PDFRenderer(document);
 	                
 	                int numberOfPages = document.getNumberOfPages();
-	                System.out.println("Total files to be converting -> "+ numberOfPages);
+	                logg.info("Total files to be converting -> "+ numberOfPages);
 
 	                String fileName = sourceFile.getName().replace(".pdf", "");             
 	                String fileExtension= "jpg";//El formato PNG es mas pesado para utilizar en la nube
@@ -73,9 +74,9 @@ public class ConvertPDFPagesToImages {
 	                }
 	                
 	                document.close();
-	                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
 	            } else {
-	                System.err.println(sourceFile.getName() +" File not exists");
+	                Slogg.error(sourceFile.getName() +" File not exists");
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -92,15 +93,15 @@ public class ConvertPDFPagesToImages {
 	            File destinationFile = new File(destinationDir+sourceFile.getName());
 	            if (!destinationFile.exists()) {
 	                destinationFile.mkdir();
-	                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
 	            }
 	            if (sourceFile.exists()) {
-	                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+	                logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
 	                PDDocument document = PDDocument.load(sourceFile);
 	                PDFRenderer pdfRenderer = new PDFRenderer(document);
 	                
 	                int numberOfPages = document.getNumberOfPages();
-	                System.out.println("Total files to be converting -> "+ numberOfPages);
+	                logg.info("Total files to be converting -> "+ numberOfPages);
 
 	                String fileName = sourceFile.getName().replace(".pdf", "");             
 	                String fileExtension= "jpg";//El formato PNG es mas pesado para utilizar en la nube
@@ -119,10 +120,10 @@ public class ConvertPDFPagesToImages {
 	                }
 	                
 	                document.close();
-	                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
 	                return larchivos;
 	            } else {
-	                System.err.println(sourceFile.getName() +" File not exists");
+					logg.error(sourceFile.getName() +" File not exists");
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -141,15 +142,15 @@ public class ConvertPDFPagesToImages {
 	            destinationDir+=sourceFile.getName().substring(0, sourceFile.getName().indexOf("."));
 	            if (!destinationFile.exists()) {
 	                destinationFile.mkdir();
-	                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
 	            }
 	            if (sourceFile.exists()) {
-	                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+	                logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
 	                PDDocument document = PDDocument.load(sourceFile);
 	                PDFRenderer pdfRenderer = new PDFRenderer(document);
 	                
 	                int numberOfPages = document.getNumberOfPages();
-	                System.out.println("Total files to be converting -> "+ numberOfPages);
+	                logg.info("Total files to be converting -> "+ numberOfPages);
 
 	                String fileName = sourceFile.getName().replace(".pdf", "");             
 	                String fileExtension= "jpg";//El formato PNG es mas pesado para utilizar en la nube
@@ -170,17 +171,71 @@ public class ConvertPDFPagesToImages {
 	                document.close();
 	                //Path folderPath = Paths.get(destinationDir);
 	                //Files.delete(folderPath);
-	                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
 	                return larchivos;
 	            } else {
-	                System.err.println(sourceFile.getName() +" File not exists");
+					logg.error(sourceFile.getName() +" File not exists");
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
+				logg.error(e.getMessage());
 	        }
 			return larchivos;
 		}
 	
+		public List<String> convertirPdfToImgS3(String archivopdf,MultipartFile file) {
+			List<String> larchivos=new ArrayList<String>();
+			   try {
+				   
+				   String sourceDir = archivopdf; // Pdf files are read from this folder
+				   String destinationDir = pdf_dir+""; // converted images from pdf document are saved here
+				   //List<Integer> selpaginas=Arrays.asList(1,2);
+				   File sourceFile = new File(sourceDir);
+				   File destinationFile = new File(destinationDir+sourceFile.getName());
+				   if (!destinationFile.exists()) {
+					   destinationFile.mkdir();
+					   logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
+				   }
+				   if (!file.isEmpty()) {
+					  logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+					   PDDocument document = PDDocument.load(sourceFile);
+					   PDFRenderer pdfRenderer = new PDFRenderer(document);
+					 
+					   int numberOfPages = document.getNumberOfPages();
+					   logg.info("Total files to be converting -> "+ numberOfPages);
+					   
+					   String fileName = file.getName().replace(".pdf", "");             
+					   String fileExtension= "jpg";//El formato PNG es pesado para la nube
+					   //Subiendo PDF original
+					   String folderS3Key = "pdfs/"+fileName+"F-"+formatterFecha.format(new Date())+"/" ;
+					   pdfTextractService.uploadFileS3(file, folderS3Key);
+					   /*
+						* 600 dpi give good image clarity but size of each image is 2x times of 300 dpi.
+						* Ex:  1. For 300dpi 04-Request-Headers_2.png expected size is 797 KB
+						*      2. For 600dpi 04-Request-Headers_2.png expected size is 2.42 MB
+						*/
+					   int dpi = 300;// use less dpi for to save more space in harddisk. For professional usage you can use more than 300dpi 
+						for (int i = 0; i < numberOfPages; ++i) {
+							File outPutFile = new File(destinationDir + fileName +"_"+ i +"."+ fileExtension);
+							BufferedImage bImage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
+							ImageIO.write(bImage, fileExtension, outPutFile);
+							String s3Key = folderS3Key +outPutFile.getName();
+							pdfTextractService.uploadPdfToS3(outPutFile.getAbsolutePath(), s3Key);	
+							larchivos.add(s3Key);
+					   }
+					   
+					   document.close();
+					   logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+					   return larchivos;
+				   } else {
+					logg.error(sourceFile.getName() +" File not exists");
+				   }
+			   } catch (Exception e) {
+				   e.printStackTrace();
+			   }
+			   return larchivos;
+		   }
+
 	 public List<String> convertirPdfSelPagToImgS3(String archivopdf,List<Integer> pagsel) {
 		 List<String> larchivos=new ArrayList<String>();
 			try {
@@ -192,15 +247,15 @@ public class ConvertPDFPagesToImages {
 	            File destinationFile = new File(destinationDir+sourceFile.getName());
 	            if (!destinationFile.exists()) {
 	                destinationFile.mkdir();
-	                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+					logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
 	            }
 	            if (sourceFile.exists()) {
-	                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+	                logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
 	                PDDocument document = PDDocument.load(sourceFile);
 	                PDFRenderer pdfRenderer = new PDFRenderer(document);
 	              
 	                int numberOfPages = document.getNumberOfPages();
-	                System.out.println("Total files to be converting -> "+ numberOfPages);
+	                logg.info("Total files to be converting -> "+ numberOfPages);
 	                
 	                String fileName = sourceFile.getName().replace(".pdf", "");             
 	                String fileExtension= "jpg";//El formato PNG es pesado para la nube
@@ -227,10 +282,10 @@ public class ConvertPDFPagesToImages {
 	                }
 	                
 	                document.close();
-	                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+	                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
 	                return larchivos;
 	            } else {
-	                System.err.println(sourceFile.getName() +" File not exists");
+	                logg.error(sourceFile.getName() +" File not exists");
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -248,15 +303,15 @@ public class ConvertPDFPagesToImages {
             File destinationFile = new File(destinationDir+sourceFile.getName());
             if (!destinationFile.exists()) {
                 destinationFile.mkdir();
-                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+                logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
             }
             if (sourceFile.exists()) {
-                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+                logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
                 PDDocument document = PDDocument.load(sourceFile);
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
                 
                 int numberOfPages = document.getNumberOfPages();
-                System.out.println("Total files to be converting -> "+ numberOfPages);
+				logg.info("Total files to be converting -> "+ numberOfPages);
 
                 String fileName = sourceFile.getName().replace(".pdf", "");             
                 String fileExtension= "jpg";//El formato PNG es mas pesado para utilizar en la nube
@@ -274,9 +329,9 @@ public class ConvertPDFPagesToImages {
                 }
                 
                 document.close();
-                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
             } else {
-                System.err.println(sourceFile.getName() +" File not exists");
+                logg.error(sourceFile.getName() +" File not exists");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -292,15 +347,15 @@ public class ConvertPDFPagesToImages {
             File destinationFile = new File(destinationDir+sourceFile.getName());
             if (!destinationFile.exists()) {
                 destinationFile.mkdir();
-                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+				logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
             }
             if (sourceFile.exists()) {
-                System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
+				logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
                 PDDocument document = PDDocument.load(sourceFile);
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
                 
                 int numberOfPages = document.getNumberOfPages();
-                System.out.println("Total files to be converting -> "+ numberOfPages);
+				logg.info("Total files to be converting -> "+ numberOfPages);
 
                 String fileName = sourceFile.getName().replace(".pdf", "");             
                 String fileExtension= "jpg";//El formato PNG es pesado para la nube
@@ -320,9 +375,9 @@ public class ConvertPDFPagesToImages {
                 }
                 
                 document.close();
-                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
             } else {
-                System.err.println(sourceFile.getName() +" File not exists");
+                logg.error(sourceFile.getName() +" File not exists");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -338,7 +393,7 @@ public class ConvertPDFPagesToImages {
             File destinationFile = new File(destinationDir+sourceFile.getName());
             if (!destinationFile.exists()) {
                 destinationFile.mkdir();
-                System.out.println("Folder Created -> "+ destinationFile.getAbsolutePath());
+                logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
             }
             if (sourceFile.exists()) {
                 System.out.println("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
@@ -346,7 +401,7 @@ public class ConvertPDFPagesToImages {
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
               
                 int numberOfPages = document.getNumberOfPages();
-                System.out.println("Total files to be converting -> "+ numberOfPages);
+				logg.info("Total files to be converting -> "+ numberOfPages);
                 
                 String fileName = sourceFile.getName().replace(".pdf", "");             
                 String fileExtension= "jpg";//El formato PNG es pesado para la nube
@@ -372,9 +427,9 @@ public class ConvertPDFPagesToImages {
                 }
                 
                 document.close();
-                System.out.println("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+				logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
             } else {
-                System.err.println(sourceFile.getName() +" File not exists");
+				logg.error(sourceFile.getName() +" File not exists");
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -12,12 +12,17 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.textract.TextractClient;
 import software.amazon.awssdk.services.textract.model.Block;
@@ -109,6 +114,32 @@ public PdfTextractService() {
                         .key(s3Key)
                         .build(),
                 Paths.get(localFilePath));
+    }
+    
+ // Subir archivo como bytes
+    public void uploadFileS3(MultipartFile file, String objectKey) throws IOException {
+        
+        // Obtener bytes y tipo de contenido
+        byte[] bytes = file.getBytes();
+        String contentType = file.getContentType();
+
+        PutObjectRequest request = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(objectKey)
+            .contentType(contentType) // Conserva el tipo de archivo
+            .build();
+            s3Client.putObject(request, RequestBody.fromBytes(bytes));
+    }
+
+    // Descargar un archivo
+    public byte[] downloadFile(String objectKey) {
+        GetObjectRequest request = GetObjectRequest.builder()
+            .bucket(bucketName)
+            .key(objectKey)
+            .build();
+
+        ResponseBytes<GetObjectResponse> response =s3Client.getObjectAsBytes(request);
+        return response.asByteArray();
     }
 
     // Inicia el análisis del PDF y obtiene el JobId

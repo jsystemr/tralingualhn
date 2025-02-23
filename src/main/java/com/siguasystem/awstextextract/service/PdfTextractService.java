@@ -2,6 +2,7 @@ package com.siguasystem.awstextextract.service;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -159,6 +160,16 @@ public PdfTextractService() {
  }
     // Descargar un archivo
     public byte[] downloadFile(String objectKey) {
+        GetObjectRequest request = GetObjectRequest.builder()
+            .bucket(getBucketName())
+            .key(objectKey)
+            .build();
+
+        ResponseBytes<GetObjectResponse> response =s3Client.getObjectAsBytes(request);
+        return response.asByteArray();
+    }
+       // Descargar un archivo
+       public byte[] downloadFileS3(String objectKey) {
         GetObjectRequest request = GetObjectRequest.builder()
             .bucket(getBucketName())
             .key(objectKey)

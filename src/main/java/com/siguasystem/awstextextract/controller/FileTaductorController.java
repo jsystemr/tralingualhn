@@ -230,8 +230,13 @@ public class FileTaductorController {
 					} // Espera 5 segundos (ajusta según necesidad)
 				}	            
 	            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
-	         // 2. Generar el PDF
-	            String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion"+".pdf";
+				
+	         // 2. Generar el PDF Traducido
+			 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
+	            String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
+				//Generar Txt Extraido
+				byte[] textoBytes = translatedText.getBytes();
+				pdfExtract.uploadFileTxtS3(textoBytes, carpetaFile+"/"+nombreArchivoOcr);
 	            byte[] pdfBytes = pdfImgService.convertTxtToPdfS3(translatedText,carpetaFile+"/"+nombreArchivoResultado);
 	            headers.setContentType(MediaType.APPLICATION_PDF);
 	            headers.setContentDispositionFormData("attachment", nombreArchivoResultado);

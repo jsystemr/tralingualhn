@@ -145,6 +145,18 @@ public PdfTextractService() {
             .build();
             s3Client.putObject(request, RequestBody.fromBytes(bytes));
     }
+
+    public void uploadFileTxtS3(byte[] bytes, String objectKey) throws IOException {
+        // Obtener bytes y tipo de contenido
+        String contentType = "txt";
+
+        PutObjectRequest request = PutObjectRequest.builder()
+            .bucket(getBucketName())
+            .key(objectKey)
+            .contentType(contentType) // Conserva el tipo de archivo
+            .build();
+            s3Client.putObject(request, RequestBody.fromBytes(bytes));
+    }
  
  public void uploadFileS3Byte(byte[] bytes, String objectKey) throws IOException {
      

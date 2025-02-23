@@ -231,7 +231,7 @@ public class FileTaductorController {
 				}	            
 	            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
 				
-	         // 2. Generar el PDF Traducido
+	         	// 2. Generar el PDF Traducido
 			 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
 	            String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
 				//Generar Txt Extraido

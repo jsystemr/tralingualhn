@@ -90,7 +90,7 @@
 									            var blob = new Blob([data], { type: 'application/pdf' });
 									            var link = document.createElement('a');
 									            link.href = window.URL.createObjectURL(blob);
-									            //link.download = 'traduccion.pdf';
+									            link.download = 'traduccion.pdf';
 									            link.click();
 									            window.URL.revokeObjectURL(link.href);
 									            cerrarCarga();
@@ -130,7 +130,7 @@
 								        const url = window.URL.createObjectURL(blob);
 								        const link = document.createElement('a');
 								        link.href = url;
-								        //link.download = 'translated.txt';
+								        link.download = 'Traduccion.txt';
 								        link.click();
 								        window.URL.revokeObjectURL(url); // Liberar memoria
 								        cerrarCarga();

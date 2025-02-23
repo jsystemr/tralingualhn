@@ -9,11 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
@@ -76,7 +74,7 @@ public class ConvertPDFPagesToImages {
 	                document.close();
 	                logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
 	            } else {
-	                Slogg.error(sourceFile.getName() +" File not exists");
+	                logg.error(sourceFile.getName() +" File not exists");
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -183,32 +181,25 @@ public class ConvertPDFPagesToImages {
 			return larchivos;
 		}
 	
-		public List<String> convertirPdfToImgS3(String archivopdf,MultipartFile file) {
+		public List<String> convertirPdfToImgS3(File archivopdf,MultipartFile file) {
 			List<String> larchivos=new ArrayList<String>();
 			   try {
 				   
-				   String sourceDir = archivopdf; // Pdf files are read from this folder
+				   String sourceDir = archivopdf.getAbsolutePath(); // Pdf files are read from this folder
 				   String destinationDir = pdf_dir+""; // converted images from pdf document are saved here
-				   //List<Integer> selpaginas=Arrays.asList(1,2);
-				   File sourceFile = new File(sourceDir);
-				   File destinationFile = new File(destinationDir+sourceFile.getName());
-				   if (!destinationFile.exists()) {
-					   destinationFile.mkdir();
-					   logg.info("Folder Created -> "+ destinationFile.getAbsolutePath());
-				   }
 				   if (!file.isEmpty()) {
-					  logg.info("Images copied to Folder Location: "+ destinationFile.getAbsolutePath());             
-					   PDDocument document = PDDocument.load(sourceFile);
+					  logg.info("Images copied to Folder Location: "+ file.getOriginalFilename());             
+					   PDDocument document = PDDocument.load(archivopdf);
 					   PDFRenderer pdfRenderer = new PDFRenderer(document);
 					 
 					   int numberOfPages = document.getNumberOfPages();
 					   logg.info("Total files to be converting -> "+ numberOfPages);
 					   
-					   String fileName = file.getName().replace(".pdf", "");             
+					   String fileName = file.getOriginalFilename().replace(".pdf", "");             
 					   String fileExtension= "jpg";//El formato PNG es pesado para la nube
 					   //Subiendo PDF original
 					   String folderS3Key = "pdfs/"+fileName+"F-"+formatterFecha.format(new Date())+"/" ;
-					   pdfTextractService.uploadFileS3(file, folderS3Key);
+					   pdfTextractService.uploadFileS3(archivopdf, folderS3Key);
 					   /*
 						* 600 dpi give good image clarity but size of each image is 2x times of 300 dpi.
 						* Ex:  1. For 300dpi 04-Request-Headers_2.png expected size is 797 KB
@@ -225,10 +216,10 @@ public class ConvertPDFPagesToImages {
 					   }
 					   
 					   document.close();
-					   logg.info("Converted Images are saved at -> "+ destinationFile.getAbsolutePath());
+					   logg.info("Converted Images are saved at -> "+ folderS3Key);
 					   return larchivos;
 				   } else {
-					logg.error(sourceFile.getName() +" File not exists");
+					logg.error(file.getName() +" File not exists");
 				   }
 			   } catch (Exception e) {
 				   e.printStackTrace();
@@ -473,6 +464,49 @@ public class ConvertPDFPagesToImages {
 	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 	        document.save(byteArrayOutputStream);
 	        return byteArrayOutputStream.toByteArray();
+	    }
+	}
+	
+	public byte[] convertTxtToPdfS3(String text,String nombrearchivo) throws IOException {
+	    try (PDDocument document = new PDDocument()) {
+	        String[] lines = text.split("\n");
+	        int lineHeight = 15;
+	        int yPosition = 650;
+	        PDPage page = new PDPage();
+	        document.addPage(page);
+	        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+	        contentStream.setFont(PDType1Font.HELVETICA, 8);
+	        contentStream.beginText();
+	        contentStream.newLineAtOffset(35, yPosition);
+
+	        for (String line : lines) {
+	            if (yPosition <= 40) { // Si llega al final de la página
+	                contentStream.endText();
+	                contentStream.close();
+	                page = new PDPage();
+	                document.addPage(page);
+	                contentStream = new PDPageContentStream(document, page);
+	                // Configurar fuente para la nueva página
+	                contentStream.setFont(PDType1Font.HELVETICA, 8); 
+	                contentStream.beginText();
+	                contentStream.newLineAtOffset(40, 650);
+	                yPosition = 700;
+	            }
+	            contentStream.showText(line);
+	            contentStream.newLineAtOffset(0, -lineHeight);
+	            yPosition -= lineHeight;
+	        }
+
+	        contentStream.endText();
+	        contentStream.close();
+
+	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	        document.save(byteArrayOutputStream);
+	      //Subiendo PDF original
+		   String folderS3Key = nombrearchivo ;
+		   pdfTextractService.uploadFileS3Byte(byteArrayOutputStream.toByteArray(), folderS3Key);
+		   return byteArrayOutputStream.toByteArray();
 	    }
 	}
 	

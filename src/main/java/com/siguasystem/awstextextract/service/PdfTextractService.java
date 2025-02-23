@@ -91,26 +91,26 @@ public PdfTextractService() {
         setRegion("us-east-2");
         setBucketName("tralingual-ocr-pdf-hn");
         this.textractClient = TextractClient.builder()
-                .region(Region.of(region))
+                .region(Region.of(getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
+                        AwsBasicCredentials.create(getAccessKey(), getSecretKey())
                 ))
                 .build();
 
         this.s3Client = S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
+                        AwsBasicCredentials.create(getAccessKey(), getSecretKey())
                 ))
                 .build();
 
-        this.bucketName = bucketName;
+        //this.bucketName = bucketName;
     }
 
     // Sube el PDF a S3 (requerido para Textract)
     public void uploadPdfToS3(String localFilePath, String s3Key) {
         s3Client.putObject(PutObjectRequest.builder()
-                        .bucket(bucketName)
+                        .bucket(getBucketName())
                         .key(s3Key)
                         .build(),
                 Paths.get(localFilePath));
@@ -131,10 +131,36 @@ public PdfTextractService() {
             s3Client.putObject(request, RequestBody.fromBytes(bytes));
     }
 
+    public void uploadFileS3(File file, String objectKey) throws IOException {
+        
+        // Obtener bytes y tipo de contenido
+        byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+        String contentType = "pdf";
+
+        PutObjectRequest request = PutObjectRequest.builder()
+            .bucket(getBucketName())
+            .key(objectKey)
+            .contentType(contentType) // Conserva el tipo de archivo
+            .build();
+            s3Client.putObject(request, RequestBody.fromBytes(bytes));
+    }
+ 
+ public void uploadFileS3Byte(byte[] bytes, String objectKey) throws IOException {
+     
+     // Obtener bytes y tipo de contenido
+     String contentType = "pdf";
+
+     PutObjectRequest request = PutObjectRequest.builder()
+         .bucket(getBucketName())
+         .key(objectKey)
+         .contentType(contentType) // Conserva el tipo de archivo
+         .build();
+         s3Client.putObject(request, RequestBody.fromBytes(bytes));
+ }
     // Descargar un archivo
     public byte[] downloadFile(String objectKey) {
         GetObjectRequest request = GetObjectRequest.builder()
-            .bucket(bucketName)
+            .bucket(getBucketName())
             .key(objectKey)
             .build();
 
@@ -147,7 +173,7 @@ public PdfTextractService() {
         StartDocumentTextDetectionRequest request = StartDocumentTextDetectionRequest.builder()
                 .documentLocation(DocumentLocation.builder()
                         .s3Object(S3Object.builder()
-                                .bucket(bucketName)
+                                .bucket(getBucketName())
                                 .name(s3Key)
                                 .build())
                         .build())

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.siguasystem.awstextextract.service.PdfTextractService;
 import com.siguasystem.awstextextract.service.AwsTextTranslateService;
 import com.siguasystem.awstextextract.service.ConvertPDFPagesToImages;
 import com.siguasystem.awstextextract.service.TextractService;
@@ -32,6 +32,8 @@ public class FileTaductorController {
     private TextractService textractService;
 	@Autowired
     private ConvertPDFPagesToImages pdfImgService;
+	@Autowired
+    private PdfTextractService pdfExtract;
 	
 	  
 	  @PostMapping("/traducir-a-ingles")
@@ -208,18 +210,17 @@ public class FileTaductorController {
 	           
 	            file.transferTo(tempFile);
 	            // Extraer texto
-	            List<String> lisTextractedText = pdfImgService.convertirPdfToImgS3(tempFile.getName(),file);//Envia nombre archivo y archivo adjunto
-	            String carpetaFile=lisTextractedText.get(0).substring(0, lisTextractedText.get(0).lastIndexOf("\\"));
+	            List<String> lisTextractedText = pdfImgService.convertirPdfToImgS3(tempFile,file);//Envia nombre archivo y archivo adjunto
+	            String carpetaFile=lisTextractedText.get(0).substring(0, lisTextractedText.get(0).lastIndexOf("/"));
 	            tempFile.delete();
 	            StringBuilder txtunido=new StringBuilder();
 	            byte[] txtBytes=new byte[10];
 	            Integer x=0;
 	            for (String rutaimg : lisTextractedText) {
 	            	x++;
-	            	 File tempImgFile = new File(rutaimg);	
 	 	            // Extraer texto
 	            	 txtunido.append("\n-----------------------Pag."+(x)+"---------------------------\n");
-	            	 txtunido.append(textractService.extractTextFromImage(tempImgFile.getAbsolutePath()));
+	            	 txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
 	            	 txtunido.append("\n----------------------------------------------------------------\n");
 		 	           try {
 						Thread.sleep(5000);
@@ -227,16 +228,13 @@ public class FileTaductorController {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} // Espera 5 segundos (ajusta según necesidad)
-		 	          tempImgFile.delete();
 				}	            
 	            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
 	         // 2. Generar el PDF
-	            byte[] pdfBytes = pdfImgService.convertTxtToPdf(translatedText);
-	            // 3. Eliminar Carpete Temporal
-	            Path folderPath = Paths.get(carpetaFile);
-                Files.delete(folderPath);
+	            String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion"+".pdf";
+	            byte[] pdfBytes = pdfImgService.convertTxtToPdfS3(translatedText,carpetaFile+"/"+nombreArchivoResultado);
 	            headers.setContentType(MediaType.APPLICATION_PDF);
-	            headers.setContentDispositionFormData("attachment", "traduccion"+".pdf");
+	            headers.setContentDispositionFormData("attachment", nombreArchivoResultado);
 
 	            return ResponseEntity.ok()
 	                    .headers(headers)
@@ -247,4 +245,5 @@ public class FileTaductorController {
 	        }
 	    }
 	
+	}
 }

@@ -55,6 +55,25 @@ public class TextractService {
         return extractTextFromResponse(response);
     }
 
+    public String extractTextFromImageS3(byte[] imageS3) throws IOException {
+        // Leer el archivo JPG como bytes
+        byte[] imageBytes = imageS3;
+        SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
+
+        // Crear la solicitud para Textract
+        DetectDocumentTextRequest request = DetectDocumentTextRequest.builder()
+                .document(Document.builder()
+                        .bytes(bytes)
+                        .build())
+                .build();
+
+        // Enviar la solicitud y obtener la respuesta
+        DetectDocumentTextResponse response = textractClient.detectDocumentText(request);
+
+        // Extraer y concatenar el texto detectado
+        return extractTextFromResponse(response);
+    }
+
     private String extractTextFromResponse(DetectDocumentTextResponse response) {
         return response.blocks().stream()
                 .filter(block -> block.blockType().equals(BlockType.LINE))

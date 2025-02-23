@@ -35,6 +35,11 @@ public class HomeController {
 		return "pdftoimgtotraductor";
 	}
 	
+	@RequestMapping(path = {"pdftoimgtotraductors3"})
+	public String pdftoimgtotraductors3() {
+		return "pdftoimgtotraductors3";
+	}
+	
 	@RequestMapping(path = {"pdftoimgtotraductorv1"})
 	public String pdftoimgtotraductorv1() {
 		return "pdftoimgtotraductorv1";

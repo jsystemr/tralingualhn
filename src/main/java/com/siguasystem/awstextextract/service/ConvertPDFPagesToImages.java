@@ -600,25 +600,28 @@ public class ConvertPDFPagesToImages {
             float pageWidth = page.getMediaBox().getWidth() - 2 * MARGIN;
             float yPosition = page.getMediaBox().getHeight() - MARGIN;
             
-            List<String> lines = splitTextIntoLines(text, pageWidth);
-            
-            for (String line : lines) {
-                // Si no hay espacio, crea una nueva página
-                if (yPosition < MARGIN) {
-                    contentStream.close();
-                    page = new PDPage();
-                    document.addPage(page);
-                    contentStream = new PDPageContentStream(document, page);
-                    contentStream.setFont(FONT, FONT_SIZE);
-                    yPosition = page.getMediaBox().getHeight() - MARGIN;
-                }
-                contentStream.setFont(PDType1Font.HELVETICA, 12); 
-                contentStream.beginText();
-                contentStream.newLineAtOffset(MARGIN, yPosition);
-                contentStream.showText(line);
-                contentStream.endText();
+            String[] lineas1 = text.split("\n");
+            for (String l1 : lineas1) {
+            	List<String> lines = splitTextIntoLines(l1, pageWidth);
                 
-                yPosition -= LINE_SPACING;
+                for (String line : lines) {
+                    // Si no hay espacio, crea una nueva página
+                    if (yPosition < MARGIN) {
+                        contentStream.close();
+                        page = new PDPage();
+                        document.addPage(page);
+                        contentStream = new PDPageContentStream(document, page);
+                        contentStream.setFont(FONT, FONT_SIZE);
+                        yPosition = page.getMediaBox().getHeight() - MARGIN;
+                    }
+                    contentStream.setFont(PDType1Font.HELVETICA, 12); 
+                    contentStream.beginText();
+                    contentStream.newLineAtOffset(MARGIN, yPosition);
+                    contentStream.showText(line);
+                    contentStream.endText();
+                    
+                    yPosition -= LINE_SPACING;
+                }
             }
             contentStream.close();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

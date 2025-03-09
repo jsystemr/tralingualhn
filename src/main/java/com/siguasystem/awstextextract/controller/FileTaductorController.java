@@ -313,7 +313,7 @@ public class FileTaductorController {
 		 	            // Extraer texto
 		            	 txtunido.append("\n---------------------------------------------------------Pag"+(x)+"------------------------------------------------------\n");
 		            	 //txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
-		            	 txtunido.append(textractService.extractTextClearFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
+		            	 txtunido.append(textractService.extractTextClearFromImageS3(pdfExtract.downloadFileS3(rutaimg)).replaceAll("\n", " "));//quita los saltos de linea
 		            	 txtunido.append("\n---------------------------------------------------------------------------------------------------------------------\n");
 			 	           try {
 							Thread.sleep(5000);
@@ -322,7 +322,7 @@ public class FileTaductorController {
 							e.printStackTrace();
 						} // Espera 5 segundos (ajusta según necesidad)
 					}	            
-		            String translatedText =service.translateText(txtunido.toString().replaceAll("\n", " "), sourceLang, targetLang);
+		            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
 		        // 2. Generar el PDF Traducido
 				 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
 					 String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.siguasystem.awstextextract.service.TextractService;
+import com.siguasystem.awstextextract.service.TextractServicev2;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -28,6 +29,9 @@ public class TextractController {
 	
 	@Autowired
     private TextractService textractService;
+	
+	@Autowired
+    private TextractServicev2 textractService2;
 
     @PostMapping("/extract-text")
     public String extractText(@RequestParam("file") MultipartFile file) {
@@ -58,6 +62,28 @@ public class TextractController {
             file.transferTo(tempFile);
         	// Procesar el archivo
             String extractedText = textractService.extractTextFromImage(tempFile.getAbsolutePath());
+            response.setHeader(
+	      	          HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +file.getName()+fcreacion+".txt"+ ";");
+	      	      response.setContentType("application/octet-stream");
+	      	      System.out.println("Report successfully generated  Done!");
+			return new ResponseEntity<>(textractService.creartextfile(extractedText).toByteArray(),HttpStatus.OK); 
+		
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
+    
+    @PostMapping("/extracttext-to-file-test")
+    public ResponseEntity<byte[]> stringToTextFiletest(@RequestParam("file") MultipartFile file,HttpServletResponse response) {
+        try {
+			String fcreacion=formatterFecha.format(new Date());
+			String nameFile=fcreacion+".txt";
+			// Guardar el archivo temporalmente
+            File tempFile = File.createTempFile("temp-", ".jpg");
+            file.transferTo(tempFile);
+        	// Procesar el archivo
+            String extractedText = textractService2.extractTextFromImagetest(tempFile.getAbsolutePath());
             response.setHeader(
 	      	          HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" +file.getName()+fcreacion+".txt"+ ";");
 	      	      response.setContentType("application/octet-stream");

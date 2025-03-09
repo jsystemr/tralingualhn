@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.siguasystem.awstextextract.service.PdfTextractService;
+
 import com.siguasystem.awstextextract.service.AwsTextTranslateService;
 import com.siguasystem.awstextextract.service.ConvertPDFPagesToImages;
+import com.siguasystem.awstextextract.service.PdfTextractService;
 import com.siguasystem.awstextextract.service.TextractService;
 
 @RestController
@@ -32,9 +33,9 @@ public class FileTaductorController {
     private TextractService textractService;
 	@Autowired
     private ConvertPDFPagesToImages pdfImgService;
+	
 	@Autowired
     private PdfTextractService pdfExtract;
-	
 	  
 	  @PostMapping("/traducir-a-ingles")
 	 public ResponseEntity<ByteArrayResource> translatePdf(
@@ -220,7 +221,8 @@ public class FileTaductorController {
 	            	x++;
 	 	            // Extraer texto
 	            	 txtunido.append("\n-----------------------Pag."+(x)+"---------------------------\n");
-	            	 txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
+	            	 //txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
+	            	 txtunido.append(textractService.extractTextBlqueFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
 	            	 txtunido.append("\n----------------------------------------------------------------\n");
 		 	           try {
 						Thread.sleep(5000);
@@ -230,11 +232,10 @@ public class FileTaductorController {
 					} // Espera 5 segundos (ajusta según necesidad)
 				}	            
 	            String translatedText =service.translateText(txtunido.toString(), sourceLang, targetLang);
-				
-	         	// 2. Generar el PDF Traducido
+	        // 2. Generar el PDF Traducido
 			 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
-	            String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
-				//Generar Txt Extraido
+				 String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
+				 //Generar Txt Extraido
 				byte[] textoBytes = translatedText.getBytes();
 				pdfExtract.uploadFileTxtS3(textoBytes, carpetaFile+"/"+nombreArchivoOcr);
 	            byte[] pdfBytes = pdfImgService.convertTxtToPdfS3(translatedText,carpetaFile+"/"+nombreArchivoResultado);
@@ -248,6 +249,97 @@ public class FileTaductorController {
 	        } catch (IOException e) {
 	            throw new RuntimeException("Error procesando el archivo", e);
 	        }
+	    }
+		
+		@PostMapping("/traducir-pdf-text-a-ingles-pdf")
+	    public ResponseEntity<?>  translatePdfToTextPdf(
+	            @RequestParam("file") MultipartFile file,
+	            @RequestParam(defaultValue = "auto") String sourceLang,
+	            @RequestParam(defaultValue = "en") String targetLang) {
+	        HttpHeaders headers = new HttpHeaders();
+	        try {
+	        	
+	        	 // Guardar el archivo temporalmente
+	            File tempFile = File.createTempFile("temp-", ".pdf");
+	           
+	            file.transferTo(tempFile);
+	            // Extraer texto
+	            String lisTextractedText = pdfImgService.convertirPdfToOnlyTxt(tempFile,file);//Envia nombre archivo y archivo adjunto
+	            tempFile.delete();
+	            StringBuilder txtunido=new StringBuilder();
+	            byte[] txtBytes=new byte[10];
+            
+	            String translatedText =service.translateText(lisTextractedText, sourceLang, targetLang);
+	        // 2. Generar el PDF Traducido
+			 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
+				 String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
+				 //Generar Txt Extraido
+				byte[] textoBytes = translatedText.getBytes();
+				pdfExtract.uploadFileTxtS3(textoBytes, nombreArchivoOcr);
+	            byte[] pdfBytes = pdfImgService.convertTxtToPdfS3(translatedText,nombreArchivoResultado);
+	            headers.setContentType(MediaType.APPLICATION_PDF);
+	            headers.setContentDispositionFormData("attachment", nombreArchivoResultado);
+
+	            return ResponseEntity.ok()
+	                    .headers(headers)
+	                    .body(pdfBytes);
+	            
+	        } catch (IOException e) {
+	            throw new RuntimeException("Error procesando el archivo", e);
+	        }
+	    }
+		
+		@PostMapping("/traducir-pdf-textparrafo-a-ingles-pdf")
+	    public ResponseEntity<?>  translatePdfToTextParrafoPdf(
+	            @RequestParam("file") MultipartFile file,
+	            @RequestParam(defaultValue = "auto") String sourceLang,
+	            @RequestParam(defaultValue = "en") String targetLang) {
+			 HttpHeaders headers = new HttpHeaders();
+		        try {
+		        	
+		        	 // Guardar el archivo temporalmente
+		            File tempFile = File.createTempFile("temp-", ".pdf");
+		           
+		            file.transferTo(tempFile);
+		            // Extraer texto
+		            List<String> lisTextractedText = pdfImgService.convertirPdfToImgS3(tempFile,file);//Envia nombre archivo y archivo adjunto
+		            String carpetaFile=lisTextractedText.get(0).substring(0, lisTextractedText.get(0).lastIndexOf("/"));
+		            tempFile.delete();
+		            StringBuilder txtunido=new StringBuilder();
+		            byte[] txtBytes=new byte[10];
+		            Integer x=0;
+		            for (String rutaimg : lisTextractedText) {
+		            	x++;
+		 	            // Extraer texto
+		            	 txtunido.append("\n---------------------------------------------------------Pag"+(x)+"------------------------------------------------------\n");
+		            	 //txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
+		            	 txtunido.append(textractService.extractTextClearFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
+		            	 txtunido.append("\n---------------------------------------------------------------------------------------------------------------------\n");
+			 	           try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} // Espera 5 segundos (ajusta según necesidad)
+					}	            
+		            String translatedText =service.translateText(txtunido.toString().replaceAll("\n", " "), sourceLang, targetLang);
+		        // 2. Generar el PDF Traducido
+				 	String nombreArchivoOcr=file.getOriginalFilename().replace(".","-")+"-ocr.txt";
+					 String nombreArchivoResultado=file.getOriginalFilename().replace(".","-")+"-traduccion.pdf";
+					 //Generar Txt Extraido
+					byte[] textoBytes = translatedText.getBytes();
+					pdfExtract.uploadFileTxtS3(textoBytes, carpetaFile+"/"+nombreArchivoOcr);
+		            byte[] pdfBytes = pdfImgService.convertTxtToPdfS3Parrafo(translatedText,carpetaFile+"/"+nombreArchivoResultado);
+		            headers.setContentType(MediaType.APPLICATION_PDF);
+		            headers.setContentDispositionFormData("attachment", nombreArchivoResultado);
+
+		            return ResponseEntity.ok()
+		                    .headers(headers)
+		                    .body(pdfBytes);
+		            
+		        } catch (IOException e) {
+		            throw new RuntimeException("Error procesando el archivo", e);
+		        }
 	    }
 	
 }

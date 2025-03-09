@@ -21,6 +21,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,11 @@ public class ConvertPDFPagesToImages {
 	 @Autowired
 	 private PdfTextractService pdfTextractService;
 	 private static SimpleDateFormat formatterFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+	 
+    private static final float MARGIN = 20;
+    private static final float FONT_SIZE = 12;
+    private static final PDType1Font FONT = PDType1Font.HELVETICA;
+    private static final float LINE_SPACING = 15; // Espacio entre líneas
 	
 	 public void convertirPdfToImg(String archivopdf) {
 			try {
@@ -225,6 +231,45 @@ public class ConvertPDFPagesToImages {
 				   e.printStackTrace();
 			   }
 			   return larchivos;
+		   }
+		
+		public String convertirPdfToOnlyTxt(File archivopdf,MultipartFile file) {
+			 StringBuilder txtunido=new StringBuilder();
+			   try {
+				   
+				   String sourceDir = archivopdf.getAbsolutePath(); // Pdf files are read from this folder
+				   String destinationDir = pdf_dir+""; // converted images from pdf document are saved here
+				   if (!file.isEmpty()) {
+					  logg.info("Images copied to Folder Location: "+ file.getOriginalFilename());             
+					  try (PDDocument document = PDDocument.load(new File(sourceDir))) {
+				           /* PDFTextStripper textStripper = new PDFTextStripper();
+				            // Iterar sobre cada página
+				            for (int pageNum = 0; pageNum < document.getNumberOfPages(); pageNum++) {
+				                textStripper.setStartPage(pageNum + 1); // PDFBox cuenta desde 1
+				                textStripper.setEndPage(pageNum + 1);
+				                txtunido.append(textStripper.getText(document));
+				                txtunido.append("\n--- Página " + (pageNum + 1) + " ---");
+				            }
+				            return txtunido.toString();*/
+						  PDFTextStripper textStripper = new PDFTextStripper();
+				            
+				            // Configurar para extraer todo el texto (sin formato específico)
+				            textStripper.setSortByPosition(true); // Ordenar por posición en la página
+				            
+				            // Extraer texto de todas las páginas
+				            txtunido.append(textStripper.getText(document));
+				            return txtunido.toString();
+				        } catch (IOException e) {
+				        	logg.error("Error: " + e.getMessage());
+				        }
+					  return txtunido.toString();
+				   } else {
+					logg.error(file.getName() +" File not exists");
+				   }
+			   } catch (Exception e) {
+				   e.printStackTrace();
+			   }
+			   return txtunido.toString();
 		   }
 
 	 public List<String> convertirPdfSelPagToImgS3(String archivopdf,List<Integer> pagsel) {
@@ -510,6 +555,16 @@ public class ConvertPDFPagesToImages {
 	    }
 	}
 	
+	public byte[] convertTxtToPdfS3Parrafo(String text,String nombrearchivo) throws IOException {
+	    try (PDDocument document = new PDDocument()) {
+	      //Subiendo PDF original
+	    	ByteArrayOutputStream byteArrayOutputStream = createPdfWithWrappedText(text, nombrearchivo);
+		   String folderS3Key = nombrearchivo ;
+		   pdfTextractService.uploadFileS3Byte(byteArrayOutputStream.toByteArray(), folderS3Key);
+		   return byteArrayOutputStream.toByteArray();
+	    }
+	}
+	
 	public Path getRuta(String filename) {
 		return Paths.get(pdf_dir).resolve(filename).toAbsolutePath();
 	}
@@ -525,5 +580,76 @@ public class ConvertPDFPagesToImages {
 			e.printStackTrace();
 		}
 	}
+	
+	public String extractCleanText(String pdfPath) throws IOException {
+	    try (PDDocument document = PDDocument.load(new File(pdfPath))) {
+	        PDFTextStripper stripper = new PDFTextStripper();
+	        stripper.setSortByPosition(true); // Organiza el texto correctamente
+	        return stripper.getText(document);
+	    }
+	}
+	
+	public static ByteArrayOutputStream createPdfWithWrappedText(String text, String nombrearchivo) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.setFont(FONT, FONT_SIZE);
+            
+            float pageWidth = page.getMediaBox().getWidth() - 2 * MARGIN;
+            float yPosition = page.getMediaBox().getHeight() - MARGIN;
+            
+            List<String> lines = splitTextIntoLines(text, pageWidth);
+            
+            for (String line : lines) {
+                // Si no hay espacio, crea una nueva página
+                if (yPosition < MARGIN) {
+                    contentStream.close();
+                    page = new PDPage();
+                    document.addPage(page);
+                    contentStream = new PDPageContentStream(document, page);
+                    contentStream.setFont(FONT, FONT_SIZE);
+                    yPosition = page.getMediaBox().getHeight() - MARGIN;
+                }
+                contentStream.setFont(PDType1Font.HELVETICA, 12); 
+                contentStream.beginText();
+                contentStream.newLineAtOffset(MARGIN, yPosition);
+                contentStream.showText(line);
+                contentStream.endText();
+                
+                yPosition -= LINE_SPACING;
+            }
+            contentStream.close();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            document.save(byteArrayOutputStream);
+            return byteArrayOutputStream;
+        }
+    }
+
+    // Divide el texto en líneas que caben en el ancho de la página
+    private static List<String> splitTextIntoLines(String text, float maxWidth) throws IOException {
+        List<String> lines = new ArrayList<>();
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+        
+        for (String word : words) {
+            String candidate = currentLine + (currentLine.length() > 0 ? " " : "") + word;
+            float width = FONT.getStringWidth(candidate) / 1000 * FONT_SIZE;
+            
+            if (width <= maxWidth) {
+                currentLine.append(currentLine.length() > 0 ? " " : "").append(word);
+            } else {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            }
+        }
+        
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+        
+        return lines;
+    }
 
 }

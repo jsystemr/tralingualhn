@@ -9,27 +9,26 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collector;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.textract.TextractClient;
+import software.amazon.awssdk.services.textract.model.AnalyzeDocumentRequest;
+import software.amazon.awssdk.services.textract.model.AnalyzeDocumentResponse;
 import software.amazon.awssdk.services.textract.model.Block;
 import software.amazon.awssdk.services.textract.model.BlockType;
 import software.amazon.awssdk.services.textract.model.DetectDocumentTextRequest;
 import software.amazon.awssdk.services.textract.model.DetectDocumentTextResponse;
 import software.amazon.awssdk.services.textract.model.Document;
+import software.amazon.awssdk.services.textract.model.Document.Builder;
+import software.amazon.awssdk.services.textract.model.FeatureType;
 
 @Service
-public class TextractService {
+public class TextractServicev2 {
 
 	@Autowired
     private TextractClient textractClient;
@@ -42,78 +41,52 @@ public class TextractService {
         byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
         SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
 
-        // Crear la solicitud para Textract
-        DetectDocumentTextRequest request = DetectDocumentTextRequest.builder()
-                .document(Document.builder()
-                        .bytes(bytes)
-                        .build())
+		// Crear la solicitud para Textract
+        AnalyzeDocumentRequest request = AnalyzeDocumentRequest.builder()
+                .featureTypes(FeatureType.TABLES, FeatureType.FORMS, FeatureType.SIGNATURES)
+                .document((Consumer<Builder>) Document.builder().bytes(bytes))
                 .build();
 
         // Enviar la solicitud y obtener la respuesta
-        DetectDocumentTextResponse response = textractClient.detectDocumentText(request);
+        AnalyzeDocumentResponse response = textractClient.analyzeDocument(request);
 
         // Extraer y concatenar el texto detectado
-        return extractTextFromResponse(response);
+        response.blocks().forEach(block -> {
+            if (block.blockType().equals(BlockType.LINE)) {
+                System.out.println("Línea detectada: " + block.text());
+            }
+        });
+        
+        return response.toString();
     }
-    
-    public String extractTextClearFromImageS3(byte[] imageS3) throws IOException {
+
+    public String extractTextFromImagetest(String imagePath) throws IOException {
         // Leer el archivo JPG como bytes
-        byte[] imageBytes = imageS3;
+	
+        byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
         SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
 
-        // Crear la solicitud para Textract
-        DetectDocumentTextRequest request = DetectDocumentTextRequest.builder()
+		// Crear la solicitud para Textract
+        AnalyzeDocumentRequest request = AnalyzeDocumentRequest.builder()
+                .featureTypes(FeatureType.TABLES, FeatureType.FORMS, FeatureType.SIGNATURES)
                 .document(Document.builder()
                         .bytes(bytes)
                         .build())
                 .build();
 
         // Enviar la solicitud y obtener la respuesta
-        DetectDocumentTextResponse response = textractClient.detectDocumentText(request);
-
+        AnalyzeDocumentResponse response = textractClient.analyzeDocument(request);
+        StringBuilder textDetctado=new StringBuilder();
         // Extraer y concatenar el texto detectado
-        return extractTextFromResponse(response).replaceAll("\n", " ");
+        response.blocks().forEach(block -> {
+            if (block.blockType().equals(BlockType.LINE)) {
+            	textDetctado.append(block.text()+"\n");
+            }
+        });
+        
+        return textDetctado.toString();
     }
-    
     public String extractTextFromImageS3(byte[] imageS3) throws IOException {
-        // Leer el archivo JPG como bytes
-        byte[] imageBytes = imageS3;
-        SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
-
-        // Crear la solicitud para Textract
-        DetectDocumentTextRequest request = DetectDocumentTextRequest.builder()
-                .document(Document.builder()
-                        .bytes(bytes)
-                        .build())
-                .build();
-
-        // Enviar la solicitud y obtener la respuesta
-        DetectDocumentTextResponse response = textractClient.detectDocumentText(request);
-
-        // Extraer y concatenar el texto detectado
-        return extractTextFromResponse(response);
-    }
-    
-    public String extractTextBlqueFromImageS3(byte[] imageS3) throws IOException {
-        // Leer el archivo JPG como bytes
-        byte[] imageBytes = imageS3;
-        SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
-
-        // Crear la solicitud para Textract
-        DetectDocumentTextRequest request = DetectDocumentTextRequest.builder()
-                .document(Document.builder()
-                        .bytes(bytes)
-                        .build())
-                .build();
-
-        // Enviar la solicitud y obtener la respuesta
-        DetectDocumentTextResponse response = textractClient.detectDocumentText(request);
-
-        // Extraer y concatenar el texto detectado
-        return extractTextBloqueFromResponse(response);
-    }
-    
-    public String extractTextLineaFromImageS3(byte[] imageS3) throws IOException {
         // Leer el archivo JPG como bytes
         byte[] imageBytes = imageS3;
         SdkBytes bytes = SdkBytes.fromByteArray(imageBytes);
@@ -137,18 +110,6 @@ public class TextractService {
                 .filter(block -> block.blockType().equals(BlockType.LINE))
                 .map(Block::text)
                 .collect(Collectors.joining("\n"));
-    }
-    
-    private String extractTextBloqueFromResponse(DetectDocumentTextResponse response) {
-        // Procesar bloques de texto
-        StringBuilder text = new StringBuilder();
-        response.blocks().forEach(block -> {
-        	if ("LINE".equals(block.blockType().toString())) {
-                text.append(block.text()).append("\n");
-        	}
-        });
-
-        return text.toString();
     }
 
     public ByteArrayOutputStream  creartextfile(String txtcontenido) throws IOException {

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head th:replace="layout/layout :: head">
+<meta charset="UTF-8">
+<title th:replace="layout/layout :: titulo">Convertir PDF to Imagen, To Traducir</title>
+</head>
+<body class="bg-dark">
+	<header style="height: 30px;">
+	
+	 </header>
+	<div class="container-fluid">
+			<div class="row m-1">
+			</div>		
+			<div class="row ">				
+				<div class="col-2">
+					<div th:replace="layout/layout :: logoempresa" class="col-4">
+		
+		            </div>
+				</div>
+			</div>			
+				<script type="text/javascript">
+					
+					$(function() {
+						//Mostrar el modal
+						$('#verpedido').on('click',function(){
+							console.log("Enttro al modal!");
+							$('.modal').modal('show');
+						});
+						
+						$('#form').submit( function(e) {
+							e.preventDefault();
+							descargarTxt(e);
+						});
+					});
+					function descargarTxt(e){
+	    						
+	    						indicadorCarga();	
+	    						const form = document.querySelector("#form");
+	    						var data =new FormData(form); // <-- 'this' is your form element
+	    						$.ajax({
+								  contentType: false,
+   								  processData: false,
+								  type: "POST",
+								  url:"/api-tra/traducir-pdf-textparrafo-a-ingles-pdf",
+								  data: data,
+								  xhrFields: {
+								        responseType:'blob', //'text'//'blob' // Indicar que la respuesta es un archivo binario
+								    },
+								   statusCode: {
+									        200: function(data) {
+									            // Manejar éxito
+									            var blob = new Blob([data], { type: 'application/pdf' });
+									            var link = document.createElement('a');
+									            link.href = window.URL.createObjectURL(blob);
+									            link.download = 'traduccion.pdf';
+									            link.click();
+									            window.URL.revokeObjectURL(link.href);
+									            cerrarCarga();
+								        		Swal.fire({icon: "success",title:"Proceso finalizado con exito!"});
+									        },
+									        404: function() {
+									            console.error('Archivo no encontrado');
+								          		Swal.fire({icon: "error",title:"Ocurrio un problema en el proceso...Archivo no encontrado",});
+									        }
+									    },
+								    error: function(xhr, status, error) {
+									cerrarCarga();
+								        console.error("Error:", error);
+								          Swal.fire({icon: "error",title:"Ocurrio un problema en el proceso...",text:error});
+								    }
+								});
+					}
+				</script>
+					<div class="row">
+							<div class="col-2" >
+							</div  >
+							<div class="col-8 bg-white">
+								<form id="form" class="bg-white" method="post" th:action="@{''}" enctype="multipart/form-data">
+									<h4 class="bg-white">Cargar el PDF a procesar:</h4>
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+									<!--<input type="hidden" name="_csrf" value="4bfd1575-3ad1-4d21-96c7-4ef2d9f86721"/> -->
+									<input type="file" name="file" />
+									<button class="btn btn-primary mb-2" id="procesar" >
+										<span class="glyphicon glyphicon-send"></span> Procesar...
+									</button>
+	
+								</form>
+							</div>
+					 </div>
+					<div class="row">	
+							<div class="col-2" >
+	
+							</div  >
+							<div class="col-8">	  
+								<div th:replace="layout/indicador01 :: indicador01" >
+		
+		            			</div>
+							</div>
+					</div>
+		<footer th:fragment="footer" class="container"> </footer>
+	</div>
+</body>
+</html >

@@ -44,4 +44,9 @@ public class HomeController {
 	public String pdftoimgtotraductorv1() {
 		return "pdftoimgtotraductorv1";
 	}
+	
+	@RequestMapping(path = {"pdftoimgtotraductorv2"})
+	public String pdftoimgtotraductorv2() {
+		return "pdftoimgtotraductorv2";
+	}
 }

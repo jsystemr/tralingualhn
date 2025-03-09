@@ -313,7 +313,7 @@ public class FileTaductorController {
 		 	            // Extraer texto
 		            	 txtunido.append("\n---------------------------------------------------------Pag"+(x)+"------------------------------------------------------\n");
 		            	 //txtunido.append(textractService.extractTextFromImageS3(pdfExtract.downloadFileS3(rutaimg)));
-		            	 txtunido.append(textractService.extractTextClearFromImageS3(pdfExtract.downloadFileS3(rutaimg)).replaceAll("\n", " "));//quita los saltos de linea
+		            	 txtunido.append(textractService.extractTextClearFromImageS3(pdfExtract.downloadFileS3(rutaimg)));//quita los saltos de linea
 		            	 txtunido.append("\n---------------------------------------------------------------------------------------------------------------------\n");
 			 	           try {
 							Thread.sleep(5000);
